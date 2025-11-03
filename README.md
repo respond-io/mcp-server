@@ -50,7 +50,7 @@ A Model Context Protocol (MCP) server implementation for the Respond.io API, ena
 
 ```bash
 # Clone the repository
-git clone <repository-url>
+git clone https://github.com/respond-io/mcp-server.git
 cd mcp-server
 
 # Install dependencies
