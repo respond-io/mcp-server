@@ -1,0 +1,99 @@
+{
+    "name": "@respond-io/mcp-server",
+    "version": "1.0.0",
+    "description": "Model Context Protocol server for Respond.io API integration with STDIO and HTTP/SSE support",
+    "type": "module",
+    "main": "dist/index.js",
+    "bin": {
+        "@respond-io/mcp-server": "dist/index.js"
+    },
+    "scripts": {
+        "build": "tsc && chmod +x dist/index.js",
+        "dev": "tsx watch src/index.ts",
+        "start": "node dist/index.js",
+        "start:stdio": "MCP_SERVER_MODE=stdio node dist/index.js",
+        "start:http": "MCP_SERVER_MODE=http node dist/index.js",
+        "start:local": "npm run build && MCP_SERVER_MODE=stdio npx @modelcontextprotocol/inspector node dist/index.js",
+        "start:debug": "DEBUG=true LOG_LEVEL=debug node dist/index.js",
+        "lint": "eslint src/**/*.ts",
+        "lint:fix": "eslint src/**/*.ts --fix",
+        "format": "prettier --write \"src/**/*.ts\"",
+        "format:check": "prettier --check \"src/**/*.ts\"",
+        "type-check": "tsc --noEmit",
+        "clean": "rm -rf dist",
+        "prepare": "npm run build",
+        "prepublishOnly": "npm run lint && npm run type-check && npm run build",
+        "docker:build": "docker build -t respondio-mcp-server .",
+        "docker:run": "docker run -p 3000:3000 --env-file .env respondio-mcp-server",
+        "docker:compose:up": "docker-compose up -d",
+        "docker:compose:down": "docker-compose down",
+        "docker:compose:logs": "docker-compose logs -f",
+        "health-check": "curl -f http://localhost:3000/health || exit 1",
+        "version:patch": "npm version patch && git push && git push --tags",
+        "version:minor": "npm version minor && git push && git push --tags",
+        "version:major": "npm version major && git push && git push --tags"
+    },
+    "keywords": [
+        "mcp",
+        "model-context-protocol",
+        "respondio",
+        "messaging",
+        "api",
+        "customer-engagement",
+        "sse",
+        "server-sent-events",
+        "http",
+        "stdio",
+        "whatsapp",
+        "facebook",
+        "instagram",
+        "telegram"
+    ],
+    "author": "Your Name <your.email@example.com>",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/respond-io/mcp-server.git"
+    },
+    "bugs": {
+        "url": "https://github.com/respond-io/mcp-server/issues"
+    },
+    "homepage": "https://github.com/respond-io/mcp-server#readme",
+    "dependencies": {
+        "@modelcontextprotocol/sdk": "^1.20.2",
+        "axios": "^1.13.1",
+        "cors": "^2.8.5",
+        "express": "^5.1.0",
+        "node-fetch": "^3.3.2",
+        "zod": "^3.24.2"
+    },
+    "devDependencies": {
+        "@eslint/eslintrc": "^3.3.1",
+        "@eslint/js": "^9.39.0",
+        "@modelcontextprotocol/inspector": "^0.17.2",
+        "@types/body-parser": "^1.19.6",
+        "@types/cors": "^2.8.19",
+        "@types/express": "^5.0.5",
+        "@types/node": "^24.9.2",
+        "@typescript-eslint/eslint-plugin": "^8.46.2",
+        "@typescript-eslint/parser": "^8.46.2",
+        "eslint": "^9.39.0",
+        "eslint-config-prettier": "^10.1.8",
+        "eslint-plugin-prettier": "^5.5.4",
+        "globals": "^16.5.0",
+        "prettier": "^3.6.2",
+        "ts-node": "^10.9.2",
+        "tsx": "^4.20.6",
+        "typescript": "^5.9.3"
+    },
+    "engines": {
+        "node": ">=18.0.0",
+        "npm": ">=9.0.0"
+    },
+    "files": [
+        "dist",
+        "README.md",
+        "LICENSE",
+        "package.json"
+    ]
+}

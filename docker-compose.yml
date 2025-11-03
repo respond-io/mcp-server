@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  respondio-mcp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: respondio-mcp-server
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - RESPONDIO_API_KEY=<Your API Key Here>
+      - RESPONDIO_BASE_URL=https://api.respond.io/v2
+      - MCP_SERVER_MODE=http
+      - PORT=3000
+      - HOST=0.0.0.0
+      - DEBUG=${DEBUG:-false}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - NODE_ENV=production
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    # Optional: Add volume for logs
+    volumes:
+      - ./logs:/app/logs
+
+networks:
+  default:
+    name: mcp-network
