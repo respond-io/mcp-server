@@ -4,11 +4,11 @@ import { BaseTool } from "./BaseTool.js";
 import { createApiClient, handleApiError, handleApiResponse } from "../utils/api.js";
 import {
   CreateContactArgs,
+  Ctx,
   GetContactArgs,
   ListContactsArgs,
   TagOperationArgs,
   Tool,
-  ToolArgs,
   UpdateContactArgs,
 } from "../types.js";
 
@@ -36,10 +36,10 @@ export class ContactsTool extends BaseTool {
             "The contact's identifier. Can be the contact's ID, email, or phone number, formatted as 'id:123', 'email:user@example.com', or 'phone:+1234567890'."
           ),
       },
-      handler: async (args: ToolArgs, ctx: any) => {
+      handler: async (args, ctx) => {
         const { identifier } = args as GetContactArgs;
         try {
-          const apiClient = createApiClient(this.apiBaseUrl, this.mode, ctx);
+          const apiClient = createApiClient(this.apiBaseUrl, this.mode, ctx as Ctx);
           const response: AxiosResponse = await apiClient.get(`/contact/${identifier}`);
           return handleApiResponse(response);
         } catch (error) {
@@ -79,10 +79,10 @@ export class ContactsTool extends BaseTool {
           .optional()
           .describe("An array of custom field objects, each with a name and value."),
       },
-      handler: async (args: ToolArgs, ctx: any) => {
+      handler: async (args, ctx) => {
         const { identifier, ...data } = args as CreateContactArgs;
         try {
-          const apiClient = createApiClient(this.apiBaseUrl, this.mode, ctx);
+          const apiClient = createApiClient(this.apiBaseUrl, this.mode, ctx as Ctx);
           const response: AxiosResponse = await apiClient.post(`/contact/${identifier}`, data);
           return handleApiResponse(response);
         } catch (error) {
@@ -104,10 +104,10 @@ export class ContactsTool extends BaseTool {
         language: z.string().optional().describe("The contact's new language code."),
         custom_fields: z.array(z.any()).optional().describe("An array of custom fields to update."),
       },
-      handler: async (args: ToolArgs, ctx: any) => {
+      handler: async (args, ctx) => {
         const { identifier, ...data } = args as UpdateContactArgs;
         try {
-          const apiClient = createApiClient(this.apiBaseUrl, this.mode, ctx);
+          const apiClient = createApiClient(this.apiBaseUrl, this.mode, ctx as Ctx);
           const response: AxiosResponse = await apiClient.put(`/contact/${identifier}`, data);
           return handleApiResponse(response);
         } catch (error) {
@@ -123,10 +123,10 @@ export class ContactsTool extends BaseTool {
           .string()
           .describe("The contact's identifier. Can be the contact's ID, email, or phone number."),
       },
-      handler: async (args: ToolArgs, ctx: any) => {
+      handler: async (args, ctx) => {
         const { identifier } = args as GetContactArgs;
         try {
-          const apiClient = createApiClient(this.apiBaseUrl, this.mode, ctx);
+          const apiClient = createApiClient(this.apiBaseUrl, this.mode, ctx as Ctx);
           const response: AxiosResponse = await apiClient.delete(`/contact/${identifier}`);
           return handleApiResponse(response);
         } catch (error) {
@@ -151,7 +151,7 @@ export class ContactsTool extends BaseTool {
           .default("UTC")
           .describe("The timezone to use for the search (e.g., 'Asia/Kuala_Lumpur')."),
       },
-      handler: async (args: ToolArgs, ctx: any) => {
+      handler: async (args, ctx) => {
         const { limit = 10, cursorId, search = "", timezone = "UTC" } = args as ListContactsArgs;
         try {
           const params = new URLSearchParams();
@@ -159,7 +159,7 @@ export class ContactsTool extends BaseTool {
           if (cursorId) {
             params.append("cursorId", String(cursorId));
           }
-          const apiClient = createApiClient(this.apiBaseUrl, this.mode, ctx);
+          const apiClient = createApiClient(this.apiBaseUrl, this.mode, ctx as Ctx);
           const response: AxiosResponse = await apiClient.post(
             `/contact/list?${params.toString()}`,
             {
@@ -186,10 +186,10 @@ export class ContactsTool extends BaseTool {
           .nonempty()
           .describe("An array of tag names to add to the contact."),
       },
-      handler: async (args: ToolArgs, ctx: any) => {
+      handler: async (args, ctx) => {
         const { identifier, tags } = args as TagOperationArgs;
         try {
-          const apiClient = createApiClient(this.apiBaseUrl, this.mode, ctx);
+          const apiClient = createApiClient(this.apiBaseUrl, this.mode, ctx as Ctx);
           const response: AxiosResponse = await apiClient.post(`/contact/${identifier}/tag`, {
             tags,
           });
@@ -211,10 +211,10 @@ export class ContactsTool extends BaseTool {
           .nonempty()
           .describe("An array of tag names to remove from the contact."),
       },
-      handler: async (args: ToolArgs, ctx: any) => {
+      handler: async (args, ctx) => {
         const { identifier, tags } = args as TagOperationArgs;
         try {
-          const apiClient = createApiClient(this.apiBaseUrl, this.mode, ctx);
+          const apiClient = createApiClient(this.apiBaseUrl, this.mode, ctx as Ctx);
           const response: AxiosResponse = await apiClient.delete(`/contact/${identifier}/tag`, {
             data: { tags },
           });

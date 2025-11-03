@@ -1,8 +1,8 @@
 import { z } from "zod";
-import { AxiosError, AxiosResponse } from "axios";
+import { AxiosError } from "axios";
 import { BaseTool } from "./BaseTool.js";
 import { createApiClient, handleApiError, handleApiResponse } from "../utils/api.js";
-import { CreateCommentArgs, Tool, ToolArgs } from "../types.js";
+import { CreateCommentArgs, Ctx, Tool } from "../types.js";
 
 /**
  * A tool for managing comments on contacts.
@@ -28,11 +28,11 @@ export class CommentTool extends BaseTool {
             "The comment text. Max 1000 characters. To mention a user, use the format {{@user.ID}}."
           ),
       },
-      handler: async (args: ToolArgs, ctx: any) => {
+      handler: async (args, ctx) => {
         const { identifier, text } = args as CreateCommentArgs;
         try {
-          const apiClient = createApiClient(this.apiBaseUrl, this.mode, ctx);
-          const response: AxiosResponse = await apiClient.post(`/contact/${identifier}/comment`, {
+          const apiClient = createApiClient(this.apiBaseUrl, this.mode, ctx as Ctx);
+          const response = await apiClient.post(`/contact/${identifier}/comment`, {
             text,
           });
           return handleApiResponse(response);

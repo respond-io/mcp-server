@@ -2,7 +2,7 @@ import { z } from "zod";
 import { AxiosError, AxiosResponse } from "axios";
 import { BaseTool } from "./BaseTool.js";
 import { createApiClient, handleApiError, handleApiResponse } from "../utils/api.js";
-import { AssignConversationArgs, Tool, ToolArgs, UpdateConversationStatusArgs } from "../types.js";
+import { AssignConversationArgs, Ctx, Tool, UpdateConversationStatusArgs } from "../types.js";
 
 /**
  * A tool for managing conversations.
@@ -26,10 +26,10 @@ export class ConversationTool extends BaseTool {
           .nullable()
           .describe("The user ID or email of the assignee. Set to null to unassign."),
       },
-      handler: async (args: ToolArgs, ctx: any) => {
+      handler: async (args, ctx) => {
         const { identifier, assignee } = args as AssignConversationArgs;
         try {
-          const apiClient = createApiClient(this.apiBaseUrl, this.mode, ctx);
+          const apiClient = createApiClient(this.apiBaseUrl, this.mode, ctx as Ctx);
           const response: AxiosResponse = await apiClient.post(
             `/contact/${identifier}/conversation/assignee`,
             {
@@ -61,10 +61,10 @@ export class ConversationTool extends BaseTool {
           .optional()
           .describe("A summary of the conversation, required when closing."),
       },
-      handler: async (args: ToolArgs, ctx: any) => {
+      handler: async (args, ctx) => {
         const { identifier, status, category, summary } = args as UpdateConversationStatusArgs;
         try {
-          const apiClient = createApiClient(this.apiBaseUrl, this.mode, ctx);
+          const apiClient = createApiClient(this.apiBaseUrl, this.mode, ctx as Ctx);
           const response: AxiosResponse = await apiClient.post(
             `/contact/${identifier}/conversation/status`,
             {

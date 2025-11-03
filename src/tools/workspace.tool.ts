@@ -2,7 +2,7 @@ import { z } from "zod";
 import { AxiosError, AxiosResponse } from "axios";
 import { BaseTool } from "./BaseTool.js";
 import { createApiClient, handleApiError, handleApiResponse } from "../utils/api.js";
-import { CreateCustomFieldArgs, PaginationArgs, Tool, ToolArgs } from "../types.js";
+import { CreateCustomFieldArgs, Ctx, PaginationArgs, Tool } from "../types.js";
 
 /**
  * A tool for managing the workspace.
@@ -27,7 +27,7 @@ export class WorkspaceTool extends BaseTool {
           .describe("The number of users to return, between 1 and 100."),
         cursorId: z.number().optional().describe("The cursor ID for pagination."),
       },
-      handler: async (args: ToolArgs, ctx: any) => {
+      handler: async (args, ctx) => {
         const { limit, cursorId } = args as PaginationArgs;
         try {
           const params = new URLSearchParams();
@@ -37,7 +37,7 @@ export class WorkspaceTool extends BaseTool {
           if (cursorId) {
             params.append("cursorId", String(cursorId));
           }
-          const apiClient = createApiClient(this.apiBaseUrl, this.mode, ctx);
+          const apiClient = createApiClient(this.apiBaseUrl, this.mode, ctx as Ctx);
           const response: AxiosResponse = await apiClient.get(`/space/user?${params.toString()}`);
           return handleApiResponse(response);
         } catch (error) {
@@ -51,10 +51,10 @@ export class WorkspaceTool extends BaseTool {
       schema: {
         userId: z.string().describe("The ID of the user to retrieve."),
       },
-      handler: async (args: ToolArgs, ctx: any) => {
+      handler: async (args, ctx) => {
         const { userId } = args as { userId: string };
         try {
-          const apiClient = createApiClient(this.apiBaseUrl, this.mode, ctx);
+          const apiClient = createApiClient(this.apiBaseUrl, this.mode, ctx as Ctx);
           const response: AxiosResponse = await apiClient.get(`/space/user/${userId}`);
           return handleApiResponse(response);
         } catch (error) {
@@ -74,7 +74,7 @@ export class WorkspaceTool extends BaseTool {
           .describe("The number of custom fields to return, between 1 and 100."),
         cursorId: z.number().optional().describe("The cursor ID for pagination."),
       },
-      handler: async (args: ToolArgs, ctx: any) => {
+      handler: async (args, ctx) => {
         const { limit, cursorId } = args as PaginationArgs;
         try {
           const params = new URLSearchParams();
@@ -84,7 +84,7 @@ export class WorkspaceTool extends BaseTool {
           if (cursorId) {
             params.append("cursorId", String(cursorId));
           }
-          const apiClient = createApiClient(this.apiBaseUrl, this.mode, ctx);
+          const apiClient = createApiClient(this.apiBaseUrl, this.mode, ctx as Ctx);
           const response: AxiosResponse = await apiClient.get(
             `/space/custom_field?${params.toString()}`
           );
@@ -115,10 +115,10 @@ export class WorkspaceTool extends BaseTool {
           .optional()
           .describe("An array of allowed values, required for 'list' data types."),
       },
-      handler: async (args: ToolArgs, ctx: any) => {
+      handler: async (args, ctx) => {
         const { name, slug, description, dataType, allowedValues } = args as CreateCustomFieldArgs;
         try {
-          const apiClient = createApiClient(this.apiBaseUrl, this.mode, ctx);
+          const apiClient = createApiClient(this.apiBaseUrl, this.mode, ctx as Ctx);
           const response: AxiosResponse = await apiClient.post("/space/custom_field", {
             name,
             slug,
@@ -144,7 +144,7 @@ export class WorkspaceTool extends BaseTool {
           .describe("The number of channels to return, between 1 and 100."),
         cursorId: z.number().optional().describe("The cursor ID for pagination."),
       },
-      handler: async (args: ToolArgs, ctx: any) => {
+      handler: async (args, ctx) => {
         const { limit, cursorId } = args as PaginationArgs;
         try {
           const params = new URLSearchParams();
@@ -154,7 +154,7 @@ export class WorkspaceTool extends BaseTool {
           if (cursorId) {
             params.append("cursorId", String(cursorId));
           }
-          const apiClient = createApiClient(this.apiBaseUrl, this.mode, ctx);
+          const apiClient = createApiClient(this.apiBaseUrl, this.mode, ctx as Ctx);
           const response: AxiosResponse = await apiClient.get(
             `/space/channel?${params.toString()}`
           );
@@ -176,7 +176,7 @@ export class WorkspaceTool extends BaseTool {
           .describe("The number of closing notes to return, between 1 and 100."),
         cursorId: z.number().optional().describe("The cursor ID for pagination."),
       },
-      handler: async (args: ToolArgs, ctx: any) => {
+      handler: async (args, ctx) => {
         const { limit, cursorId } = args as PaginationArgs;
         try {
           const params = new URLSearchParams();
@@ -186,7 +186,7 @@ export class WorkspaceTool extends BaseTool {
           if (cursorId) {
             params.append("cursorId", String(cursorId));
           }
-          const apiClient = createApiClient(this.apiBaseUrl, this.mode, ctx);
+          const apiClient = createApiClient(this.apiBaseUrl, this.mode, ctx as Ctx);
           const response: AxiosResponse = await apiClient.get(
             `/space/closing_notes?${params.toString()}`
           );

@@ -2,7 +2,7 @@ import { z } from "zod";
 import { AxiosError, AxiosResponse } from "axios";
 import { BaseTool } from "./BaseTool.js";
 import { createApiClient, handleApiError, handleApiResponse } from "../utils/api.js";
-import { GetMessageArgs, MessagePayload, SendMessageArgs, Tool, ToolArgs } from "../types.js";
+import { Ctx, GetMessageArgs, MessagePayload, SendMessageArgs, Tool } from "../types.js";
 
 /**
  * A tool for sending and retrieving messages.
@@ -59,7 +59,7 @@ export class MessagingTool extends BaseTool {
           .optional()
           .describe("The language code of the WhatsApp template."),
       },
-      handler: async (args: ToolArgs, ctx: any) => {
+      handler: async (args, ctx) => {
         const { identifier, channelId, messageType, ...messageData } = args as SendMessageArgs;
         try {
           let message: MessagePayload;
@@ -98,7 +98,7 @@ export class MessagingTool extends BaseTool {
               throw new Error(`Unsupported message type: ${messageType}`);
           }
 
-          const apiClient = createApiClient(this.apiBaseUrl, this.mode, ctx);
+          const apiClient = createApiClient(this.apiBaseUrl, this.mode, ctx as Ctx);
           const response: AxiosResponse = await apiClient.post(`/contact/${identifier}/message`, {
             channelId,
             message,
@@ -118,10 +118,10 @@ export class MessagingTool extends BaseTool {
           .describe("The contact's identifier. Can be the contact's ID, email, or phone number."),
         messageId: z.number().describe("The ID of the message to retrieve."),
       },
-      handler: async (args: ToolArgs, ctx: any) => {
+      handler: async (args, ctx) => {
         const { identifier, messageId } = args as GetMessageArgs;
         try {
-          const apiClient = createApiClient(this.apiBaseUrl, this.mode, ctx);
+          const apiClient = createApiClient(this.apiBaseUrl, this.mode, ctx as Ctx);
           const response: AxiosResponse = await apiClient.get(
             `/contact/${identifier}/message/${messageId}`
           );

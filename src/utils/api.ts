@@ -1,5 +1,6 @@
 import axios, { AxiosInstance, AxiosError, AxiosResponse } from "axios";
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
+import { Ctx } from "../types.js";
 
 /**
  * Creates a new Axios API client.
@@ -8,11 +9,7 @@ import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
  * @returns {AxiosInstance} - An Axios instance configured with the base URL, authorization headers, and a timeout.
  * @throws {Error} - Throws an error if the API base URL or token is not set.
  */
-export const createApiClient = (
-  apiBaseUrl: string,
-  mode: string,
-  ctx: { requestInfo?: { headers?: { authorization?: string } } } | undefined
-): AxiosInstance => {
+export const createApiClient = (apiBaseUrl: string, mode: string, ctx: Ctx): AxiosInstance => {
   const apiToken =
     mode === "http" && ctx?.requestInfo?.headers?.authorization
       ? ctx.requestInfo.headers.authorization
