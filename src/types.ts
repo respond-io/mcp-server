@@ -355,6 +355,11 @@ export interface GetMessageArgs {
   messageId: number;
 }
 
+export interface ListMessagesArgs extends PaginationArgs {
+  identifier: string;
+  channelId?: number | null;
+}
+
 export interface AssignConversationArgs {
   identifier: string;
   assignee: string | null;

@@ -2,7 +2,7 @@ import { z } from "zod";
 import { AxiosError, AxiosResponse } from "axios";
 import { BaseTool } from "./BaseTool.js";
 import { createApiClient, handleApiError, handleApiResponse } from "../utils/api.js";
-import { Ctx, GetMessageArgs, MessagePayload, SendMessageArgs, Tool } from "../types.js";
+import { Ctx, GetMessageArgs, ListMessagesArgs, MessagePayload, SendMessageArgs, Tool } from "../types.js";
 
 /**
  * A tool for sending and retrieving messages.
@@ -124,6 +124,43 @@ export class MessagingTool extends BaseTool {
           const apiClient = createApiClient(this.apiBaseUrl, this.mode, ctx as Ctx);
           const response: AxiosResponse = await apiClient.get(
             `/contact/${identifier}/message/${messageId}`
+          );
+          return handleApiResponse(response);
+        } catch (error) {
+          return handleApiError(error as AxiosError);
+        }
+      },
+    },
+    {
+      name: "list_messages",
+      description: "List all messages of a specific contact.",
+      schema: {
+        identifier: z
+          .string()
+          .describe("The contact's identifier. Can be the contact's ID, email, or phone number."),
+        limit: z
+          .number()
+          .min(1)
+          .max(100)
+          .default(10)
+          .describe("The number of users to return, between 1 and 100."),
+        cursorId: z.number().optional().describe("The cursor ID for pagination."),
+        channelId: z.number().nullable().optional().describe("Filter messages by channel ID."),
+      },
+      handler: async (args, ctx) => {
+        const { identifier, limit = 10, cursorId, channelId } = args as ListMessagesArgs;
+        try {
+          const params = new URLSearchParams();
+          params.append("limit", String(limit));
+          if (cursorId) {
+            params.append("cursorId", String(cursorId));
+          }
+          if (typeof channelId !== "undefined" && channelId !== null) {
+            params.append("channelId", String(channelId));
+          }
+          const apiClient = createApiClient(this.apiBaseUrl, this.mode, ctx as Ctx);
+          const response: AxiosResponse = await apiClient.get(
+            `/contact/${identifier}/message/list?${params.toString()}`
           );
           return handleApiResponse(response);
         } catch (error) {
