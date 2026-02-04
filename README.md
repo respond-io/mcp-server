@@ -8,14 +8,17 @@ A Model Context Protocol (MCP) server implementation for the Respond.io API, ena
 
 ### Contact Management
 - ✅ Get, create, update, and delete contacts
+- ✅ Create or update contact (upsert by identifier)
+- ✅ Merge two contacts (primary + secondary)
 - ✅ List contacts with filters and search
 - ✅ Add and remove contact tags
 - ✅ Update contact lifecycle stages
-- ✅ List contact channels
+- ✅ List contact channels (e.g. WhatsApp, Facebook)
 
 ### Messaging
 - ✅ Send messages (text, attachments, WhatsApp templates, emails)
 - ✅ Retrieve message details and status
+- ✅ List messages for a contact (with pagination)
 - ✅ Support for multiple channel types
 
 ### Conversations
@@ -24,10 +27,11 @@ A Model Context Protocol (MCP) server implementation for the Respond.io API, ena
 - ✅ Add closing notes and summaries
 
 ### Workspace Management
-- ✅ List users and get user details
-- ✅ Manage custom fields
-- ✅ List channels and closing notes
-- ✅ Create and manage workspace tags
+- ✅ List users and get user by ID
+- ✅ List, get, and create custom fields
+- ✅ List channels and message templates (e.g. WhatsApp)
+- ✅ List closing notes (for closing conversations)
+- ✅ Create, update, and delete workspace tags
 
 ### Comments
 - ✅ Add internal comments to contacts
@@ -53,12 +57,14 @@ A Model Context Protocol (MCP) server implementation for the Respond.io API, ena
 git clone https://github.com/respond-io/mcp-server.git
 cd mcp-server
 
-# Install dependencies
+# Install dependencies (includes Respond.io SDK)
 npm install
 
 # Build the project
 npm run build
 ```
+
+The project depends on `@respond-io/typescript-sdk`. See [SETUP_GUIDE.md](SETUP_GUIDE.md) for full installation and configuration.
 
 ---
 
@@ -112,8 +118,7 @@ You can use this server with Claude Desktop in either **STDIO** (local subproces
 - Launch Claude Desktop and add this MCP server.
 - The server will start as a subprocess and communicate over stdio.
 
-**Test:**  
-Try any MCP tool from Claude Desktop, e.g., get a contact or send a message.
+**Test:** Try any MCP tool from Claude Desktop, e.g., get a contact or send a message.
 
 ---
 
@@ -205,6 +210,36 @@ add_contact_tags({
 })
 ```
 
+#### Create or Update Contact (upsert)
+```typescript
+create_or_update_contact({
+  identifier: "email:user@example.com",
+  firstName: "John",
+  lastName: "Doe",
+  email: "user@example.com"
+})
+```
+
+#### Merge Contacts
+```typescript
+merge_contacts({
+  primaryContactId: 1,
+  secondaryContactId: 2,
+  firstName: "Merged Name"
+})
+```
+
+#### List Contact Channels
+```typescript
+list_contact_channels({ identifier: "id:12345", limit: 10 })
+```
+
+#### Update Contact Lifecycle
+```typescript
+update_contact_lifecycle({ identifier: "id:12345", stage: "Lead" })
+// Clear lifecycle: stage: null
+```
+
 ### Messaging
 
 #### Send Text Message
@@ -247,6 +282,20 @@ send_message({
   messageType: "attachment",
   attachmentUrl: "https://example.com/invoice.pdf",
   attachmentType: "file"
+})
+```
+
+#### Get Message
+```typescript
+get_message({ identifier: "id:12345", messageId: 987654 })
+```
+
+#### List Messages
+```typescript
+list_messages({
+  identifier: "id:12345",
+  limit: 20,
+  cursorId: undefined  // optional, for pagination
 })
 ```
 
@@ -297,9 +346,22 @@ create_comment({
 
 #### List Users
 ```typescript
-list_users({
-  limit: 20
-})
+list_users({ limit: 20 })
+```
+
+#### Get User
+```typescript
+get_user({ id: 123 })
+```
+
+#### List Custom Fields
+```typescript
+list_custom_fields({ limit: 10 })
+```
+
+#### Get Custom Field
+```typescript
+get_custom_field({ id: 1 })
 ```
 
 #### Create Custom Field
@@ -315,62 +377,98 @@ create_custom_field({
 
 #### List Channels
 ```typescript
-list_channels({
-  limit: 10
+list_channels({ limit: 10 })
+```
+
+#### List Closing Notes
+```typescript
+list_closing_notes({ limit: 10 })
+```
+
+#### List Message Templates (e.g. WhatsApp)
+```typescript
+list_templates({ channelId: 5678, limit: 10 })
+```
+
+#### Create Tag
+```typescript
+create_tag({
+  name: "VIP",
+  description: "VIP customers",
+  colorCode: "#FF5733"
 })
+```
+
+#### Update Tag
+```typescript
+update_tag({
+  currentName: "VIP",
+  name: "Premium",
+  colorCode: "#FFD700"
+})
+```
+
+#### Delete Tag
+```typescript
+delete_tag({ name: "Old Tag" })
 ```
 
 ---
 
 ## Available Tools
 
-### Contact Tools
-- `get_contact` - Retrieve contact information
-- `create_contact` - Create a new contact
-- `update_contact` - Update contact information
-- `delete_contact` - Delete a contact
-- `list_contacts` - List all contacts with filters
-- `add_contact_tags` - Add tags to a contact
-- `remove_contact_tags` - Remove tags from a contact
+The server exposes **28** MCP tools for contacts, messaging, conversations, comments, and workspace management.
 
-### Messaging Tools
-- `send_message` - Send messages (text, attachment, template, email)
-- `get_message` - Retrieve message details
+**Summary:**
 
-### Conversation Tools
-- `assign_conversation` - Assign/unassign conversations
-- `update_conversation_status` - Open/close conversations
+- **Contact (11):** `get_contact`, `create_contact`, `update_contact`, `delete_contact`, `list_contacts`, `add_contact_tags`, `remove_contact_tags`, `create_or_update_contact`, `merge_contacts`, `list_contact_channels`, `update_contact_lifecycle`
+- **Messaging (3):** `send_message`, `get_message`, `list_messages`
+- **Conversation (2):** `assign_conversation`, `update_conversation_status`
+- **Comment (1):** `create_comment`
+- **Workspace (11):** `list_users`, `get_user`, `list_custom_fields`, `get_custom_field`, `create_custom_field`, `list_channels`, `list_closing_notes`, `list_templates`, `create_tag`, `update_tag`, `delete_tag`
 
-### Comment Tools
-- `create_comment` - Add internal comments
-
-### Workspace Tools
-- `list_users` - List workspace users
-- `get_user` - Get user details
-- `list_custom_fields` - List custom fields
-- `create_custom_field` - Create custom fields
-- `list_channels` - List messaging channels
-- `list_closing_notes` - List closing note categories
+Tool parameters are defined in the server’s tool schemas (see `src/tools/`). Response shapes, rate limits, and API behavior come from the [Respond.io Developer API](https://docs.respond.io) and the [@respond-io/typescript-sdk](https://www.npmjs.com/package/@respond-io/typescript-sdk) used under the hood.
 
 ---
 
 ## Development
 
+### Testing
+
+The project uses [Jest](https://jestjs.io/) for tests. Tests run against an in-memory MCP transport and mock the Respond.io API so no real API key is needed for unit tests.
+
+```bash
+# Run tests once
+npm run test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Run tests with coverage
+npm run test:coverage
+```
+
+Tests cover:
+- **Server & list_tools**: All 28 tools are exposed; each has name, description, and inputSchema; server name/version and capabilities are reported.
+- **All 28 tools** (with mocked API): contact, messaging, conversation, comment, and workspace tools.
+- **Validation & error scenarios**: Unknown tool name, missing required args, invalid enums, empty arrays where non-empty is required.
+
 ### Project Structure
+
 ```
 mcp-server/
 ├── src/
 │   ├── index.ts          # Main server implementation
+│   ├── server.ts         # MCP server factory
 │   ├── middlewares/      # Express middlewares
-│   ├── utils/            # Utility functions
+│   ├── protocol/         # STDIO / HTTP protocol handlers
+│   ├── utils/            # Utility functions (API client)
 │   └── tools/            # Tool definitions
 ├── dist/                 # Compiled JavaScript output
+├── tests/                # Jest tests
 ├── .env.example          # Environment variable template
-├── .eslintrc.json        # ESLint configuration
-├── .prettierrc.json      # Prettier configuration
-├── tsconfig.json         # TypeScript configuration
-├── package.json          # Project dependencies
-└── README.md             # Documentation
+├── README.md             # Documentation
+└── SETUP_GUIDE.md        # Setup instructions
 ```
 
 ### Development Commands

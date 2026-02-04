@@ -34,6 +34,11 @@ yarn-error.log*
 # Testing
 coverage/
 .nyc_output/
+# Generated test output (do not commit)
+tests/*.js
+tests/*.js.map
+tests/*.d.ts
+tests/*.d.ts.map
 
 # Misc
 .cache/

@@ -1,5 +1,6 @@
 import { API_CONFIG, APP_CONFIG } from "./constants.js";
 import { HttpStreamProtocol, StdioProtocol } from "./protocol/index.js";
+import { initializeClientMonitoring } from "./utils/api.js";
 
 /**
  * Initializes and starts the appropriate protocol based on the `MCP_SERVER_MODE` environment variable.
@@ -29,6 +30,9 @@ const startServer = async () => {
 
   try {
     await protocol.init();
+    // Initialize client monitoring after protocol is ready
+    initializeClientMonitoring();
+    console.log("Respond.io MCP Server started successfully");
   } catch (err) {
     console.error("Failed to start protocol:", err);
     process.exit(1);
