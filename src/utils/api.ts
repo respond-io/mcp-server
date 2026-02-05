@@ -185,7 +185,7 @@ class SdkClientManager {
   private setupGracefulShutdown(): void {
     const shutdown = () => {
       // eslint-disable-next-line no-console
-      console.log("Shutting down SDK client manager...");
+      console.warn("Shutting down SDK client manager...");
       this.stopHealthChecks();
       // Close any connections if needed
     };
@@ -240,13 +240,13 @@ export function getSdkClientStats() {
  */
 export function initializeClientMonitoring(): void {
   // eslint-disable-next-line no-console
-  console.log("SDK Client monitoring initialized");
+  console.warn("SDK Client monitoring initialized");
 
   const statsInterval = setInterval(
     () => {
       const stats = getSdkClientStats();
       // eslint-disable-next-line no-console
-      console.log("Client Stats:", {
+      console.warn("Client Stats:", {
         total: stats.totalClients,
         healthy: stats.healthyClients,
         unhealthy: stats.unhealthyClients,

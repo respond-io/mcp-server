@@ -33,7 +33,7 @@ const startServer = async () => {
     await protocol.init();
     // Initialize client monitoring after protocol is ready
     initializeClientMonitoring();
-    console.log("Respond.io MCP Server started successfully");
+    console.warn("Respond.io MCP Server started successfully");
   } catch (err) {
     console.error("Failed to start protocol:", err);
     process.exit(1);
