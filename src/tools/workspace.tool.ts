@@ -1,18 +1,18 @@
 import { z } from "zod";
-import { AxiosError, AxiosResponse } from "axios";
 import { BaseTool } from "./BaseTool.js";
-import { createApiClient, handleApiError, handleApiResponse } from "../utils/api.js";
-import { CreateCustomFieldArgs, Ctx, PaginationArgs, Tool } from "../types.js";
+import { createSdkClient, handleSdkError, handleSdkResponse } from "../utils/api.js";
+import { CustomFieldDataType } from "@respond-io/typescript-sdk";
+import { Ctx, Tool } from "../types.js";
 
 /**
  * A tool for managing the workspace.
- * This tool provides functionalities for listing users, getting user details,
- * listing and creating custom fields, listing channels, and listing closing notes.
+ * This tool provides functionalities for listing users, creating custom fields,
+ * listing channels, and managing tags.
  */
 export class WorkspaceTool extends BaseTool {
   /**
    * The list of tools provided by the WorkspaceTool.
-   * It includes tools for managing users, custom fields, channels, and closing notes.
+   * It includes tools for managing users, custom fields, channels, and tags.
    */
   protected tools: Tool[] = [
     {
@@ -28,37 +28,30 @@ export class WorkspaceTool extends BaseTool {
         cursorId: z.number().optional().describe("The cursor ID for pagination."),
       },
       handler: async (args, ctx) => {
-        const { limit, cursorId } = args as PaginationArgs;
+        const { limit, cursorId } = args as { limit?: number; cursorId?: number };
         try {
-          const params = new URLSearchParams();
-          if (limit) {
-            params.append("limit", String(limit));
-          }
-          if (cursorId) {
-            params.append("cursorId", String(cursorId));
-          }
-          const apiClient = createApiClient(this.apiBaseUrl, this.mode, ctx as Ctx);
-          const response: AxiosResponse = await apiClient.get(`/space/user?${params.toString()}`);
-          return handleApiResponse(response);
+          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx);
+          const result = await sdkClient.space.listUsers({ limit, cursorId });
+          return handleSdkResponse(result);
         } catch (error) {
-          return handleApiError(error as AxiosError);
+          return handleSdkError(error);
         }
       },
     },
     {
       name: "get_user",
-      description: "Retrieve information about a specific user.",
+      description: "Get a workspace user by their ID.",
       schema: {
-        userId: z.string().describe("The ID of the user to retrieve."),
+        id: z.number().describe("The user ID."),
       },
       handler: async (args, ctx) => {
-        const { userId } = args as { userId: string };
+        const { id } = args as { id: number };
         try {
-          const apiClient = createApiClient(this.apiBaseUrl, this.mode, ctx as Ctx);
-          const response: AxiosResponse = await apiClient.get(`/space/user/${userId}`);
-          return handleApiResponse(response);
+          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx);
+          const result = await sdkClient.space.getUser(id);
+          return handleSdkResponse(result);
         } catch (error) {
-          return handleApiError(error as AxiosError);
+          return handleSdkError(error);
         }
       },
     },
@@ -75,22 +68,30 @@ export class WorkspaceTool extends BaseTool {
         cursorId: z.number().optional().describe("The cursor ID for pagination."),
       },
       handler: async (args, ctx) => {
-        const { limit, cursorId } = args as PaginationArgs;
+        const { limit, cursorId } = args as { limit?: number; cursorId?: number };
         try {
-          const params = new URLSearchParams();
-          if (limit) {
-            params.append("limit", String(limit));
-          }
-          if (cursorId) {
-            params.append("cursorId", String(cursorId));
-          }
-          const apiClient = createApiClient(this.apiBaseUrl, this.mode, ctx as Ctx);
-          const response: AxiosResponse = await apiClient.get(
-            `/space/custom_field?${params.toString()}`
-          );
-          return handleApiResponse(response);
+          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx);
+          const result = await sdkClient.space.listCustomFields({ limit, cursorId });
+          return handleSdkResponse(result);
         } catch (error) {
-          return handleApiError(error as AxiosError);
+          return handleSdkError(error);
+        }
+      },
+    },
+    {
+      name: "get_custom_field",
+      description: "Get a custom field by its ID.",
+      schema: {
+        id: z.number().describe("The custom field ID."),
+      },
+      handler: async (args, ctx) => {
+        const { id } = args as { id: number };
+        try {
+          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx);
+          const result = await sdkClient.space.getCustomField(id);
+          return handleSdkResponse(result);
+        } catch (error) {
+          return handleSdkError(error);
         }
       },
     },
@@ -116,19 +117,25 @@ export class WorkspaceTool extends BaseTool {
           .describe("An array of allowed values, required for 'list' data types."),
       },
       handler: async (args, ctx) => {
-        const { name, slug, description, dataType, allowedValues } = args as CreateCustomFieldArgs;
+        const { name, slug, description, dataType, allowedValues } = args as {
+          name: string;
+          slug?: string;
+          description?: string;
+          dataType: CustomFieldDataType;
+          allowedValues?: string[];
+        };
         try {
-          const apiClient = createApiClient(this.apiBaseUrl, this.mode, ctx as Ctx);
-          const response: AxiosResponse = await apiClient.post("/space/custom_field", {
+          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx);
+          const result = await sdkClient.space.createCustomField({
             name,
             slug,
             description,
             dataType,
             allowedValues,
           });
-          return handleApiResponse(response);
+          return handleSdkResponse(result);
         } catch (error) {
-          return handleApiError(error as AxiosError);
+          return handleSdkError(error);
         }
       },
     },
@@ -145,28 +152,19 @@ export class WorkspaceTool extends BaseTool {
         cursorId: z.number().optional().describe("The cursor ID for pagination."),
       },
       handler: async (args, ctx) => {
-        const { limit, cursorId } = args as PaginationArgs;
+        const { limit, cursorId } = args as { limit?: number; cursorId?: number };
         try {
-          const params = new URLSearchParams();
-          if (limit) {
-            params.append("limit", String(limit));
-          }
-          if (cursorId) {
-            params.append("cursorId", String(cursorId));
-          }
-          const apiClient = createApiClient(this.apiBaseUrl, this.mode, ctx as Ctx);
-          const response: AxiosResponse = await apiClient.get(
-            `/space/channel?${params.toString()}`
-          );
-          return handleApiResponse(response);
+          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx);
+          const result = await sdkClient.space.listChannels({ limit, cursorId });
+          return handleSdkResponse(result);
         } catch (error) {
-          return handleApiError(error as AxiosError);
+          return handleSdkError(error);
         }
       },
     },
     {
       name: "list_closing_notes",
-      description: "Get a list of all closing notes in the workspace.",
+      description: "List closing note categories/options used when closing conversations.",
       schema: {
         limit: z
           .number()
@@ -177,22 +175,122 @@ export class WorkspaceTool extends BaseTool {
         cursorId: z.number().optional().describe("The cursor ID for pagination."),
       },
       handler: async (args, ctx) => {
-        const { limit, cursorId } = args as PaginationArgs;
+        const { limit, cursorId } = args as { limit?: number; cursorId?: number };
         try {
-          const params = new URLSearchParams();
-          if (limit) {
-            params.append("limit", String(limit));
-          }
-          if (cursorId) {
-            params.append("cursorId", String(cursorId));
-          }
-          const apiClient = createApiClient(this.apiBaseUrl, this.mode, ctx as Ctx);
-          const response: AxiosResponse = await apiClient.get(
-            `/space/closing_notes?${params.toString()}`
-          );
-          return handleApiResponse(response);
+          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx);
+          const result = await sdkClient.space.listClosingNotes({ limit, cursorId });
+          return handleSdkResponse(result);
         } catch (error) {
-          return handleApiError(error as AxiosError);
+          return handleSdkError(error);
+        }
+      },
+    },
+    {
+      name: "list_templates",
+      description: "List WhatsApp (or channel) message templates for a channel.",
+      schema: {
+        channelId: z.number().describe("The channel ID to list templates for."),
+        limit: z
+          .number()
+          .min(1)
+          .max(100)
+          .default(10)
+          .describe("The number of templates to return, between 1 and 100."),
+        cursorId: z.number().optional().describe("The cursor ID for pagination."),
+      },
+      handler: async (args, ctx) => {
+        const {
+          channelId,
+          limit = 10,
+          cursorId,
+        } = args as {
+          channelId: number;
+          limit?: number;
+          cursorId?: number;
+        };
+        try {
+          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx);
+          const result = await sdkClient.space.listTemplates(channelId, { limit, cursorId });
+          return handleSdkResponse(result);
+        } catch (error) {
+          return handleSdkError(error);
+        }
+      },
+    },
+    {
+      name: "create_tag",
+      description: "Create a workspace tag (used to tag contacts or conversations).",
+      schema: {
+        name: z.string().describe("The tag name."),
+        description: z.string().optional().describe("Optional description for the tag."),
+        colorCode: z
+          .string()
+          .optional()
+          .describe("Optional hex color code for the tag (e.g. #FF5733)."),
+        emoji: z.string().optional().describe("Optional emoji for the tag."),
+      },
+      handler: async (args, ctx) => {
+        const { name, description, colorCode, emoji } = args as {
+          name: string;
+          description?: string;
+          colorCode?: string;
+          emoji?: string;
+        };
+        try {
+          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx);
+          const result = await sdkClient.space.createTag({
+            name,
+            description,
+            colorCode,
+            emoji,
+          });
+          return handleSdkResponse(result);
+        } catch (error) {
+          return handleSdkError(error);
+        }
+      },
+    },
+    {
+      name: "update_tag",
+      description: "Update an existing workspace tag.",
+      schema: {
+        currentName: z.string().describe("The current name of the tag to update."),
+        name: z.string().optional().describe("The new name for the tag."),
+        colorCode: z.string().optional().describe("Optional new hex color code (e.g. #FFD700)."),
+      },
+      handler: async (args, ctx) => {
+        const { currentName, name, colorCode } = args as {
+          currentName: string;
+          name?: string;
+          colorCode?: string;
+        };
+        try {
+          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx);
+          const result = await sdkClient.space.updateTag({
+            currentName,
+            name,
+            colorCode,
+          });
+          return handleSdkResponse(result);
+        } catch (error) {
+          return handleSdkError(error);
+        }
+      },
+    },
+    {
+      name: "delete_tag",
+      description: "Delete a workspace tag by name.",
+      schema: {
+        name: z.string().describe("The name of the tag to delete."),
+      },
+      handler: async (args, ctx) => {
+        const { name } = args as { name: string };
+        try {
+          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx);
+          const result = await sdkClient.space.deleteTag({ name });
+          return handleSdkResponse(result);
+        } catch (error) {
+          return handleSdkError(error);
         }
       },
     },

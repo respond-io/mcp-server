@@ -34,7 +34,6 @@ A production-ready Model Context Protocol (MCP) server that provides seamless in
   "runtime": "Node.js 18+",
   "language": "TypeScript 5.3+",
   "protocol": "Model Context Protocol (MCP)",
-  "http_client": "Axios",
   "code_quality": ["ESLint", "Prettier"],
   "architecture": "Modular, event-driven"
 }
@@ -52,12 +51,9 @@ mcp-server/
 │   ├── middlewares/      # Express middlewares
 │   └── tools/            # Tool definitions
 ├── dist/                 # Compiled JavaScript (auto-generated)
-├── docs/
-│   ├── README.md         # Project overview
-│   ├── SETUP_GUIDE.md    # Installation instructions
-│   ├── API_REFERENCE.md  # Complete API documentation
-│   ├── CONTRIBUTING.md   # Contribution guidelines
-│   └── CHANGELOG.md      # Version history
+├── README.md             # Project overview, features, tool list, examples
+├── SETUP_GUIDE.md        # Installation instructions
+├── CONTRIBUTING.md       # Contribution guidelines
 ├── .env.example          # Environment configuration template
 ├── .eslintrc.json        # Code linting rules
 ├── .prettierrc.json      # Code formatting rules
@@ -67,35 +63,29 @@ mcp-server/
 └── .gitignore           # Git ignore rules
 ```
 
-## Available Tools (23 Total)
+## Available Tools (28 Total)
 
-### Contact Management (7 tools)
-1. `get_contact` - Retrieve contact details
-2. `create_contact` - Create new contacts
-3. `update_contact` - Update contact information
-4. `delete_contact` - Remove contacts
-5. `list_contacts` - List with filters/pagination
-6. `add_contact_tags` - Add tags
-7. `remove_contact_tags` - Remove tags
+See **[README.md](README.md#available-tools)** for the full list and usage examples. Response shapes and API behavior follow the [Respond.io Developer API](https://docs.respond.io) and the SDK.
 
-### Messaging (2 tools)
-8. `send_message` - Send messages (text, email, WhatsApp, attachments)
-9. `get_message` - Retrieve message details
+### Contact Management (11 tools)
+
+`get_contact`, `create_contact`, `update_contact`, `delete_contact`, `list_contacts`, `add_contact_tags`, `remove_contact_tags`, `create_or_update_contact`, `merge_contacts`, `list_contact_channels`, `update_contact_lifecycle`
+
+### Messaging (3 tools)
+
+`send_message`, `get_message`, `list_messages`
 
 ### Conversations (2 tools)
-10. `assign_conversation` - Assign to users
-11. `update_conversation_status` - Open/close conversations
+
+`assign_conversation`, `update_conversation_status`
 
 ### Comments (1 tool)
-12. `create_comment` - Add internal comments
 
-### Workspace Management (6 tools)
-13. `list_users` - List workspace users
-14. `get_user` - Get user details
-15. `list_custom_fields` - List custom fields
-16. `create_custom_field` - Create custom fields
-17. `list_channels` - List messaging channels
-18. `list_closing_notes` - List closing categories
+`create_comment`
+
+### Workspace Management (11 tools)
+
+`list_users`, `get_user`, `list_custom_fields`, `get_custom_field`, `create_custom_field`, `list_channels`, `list_closing_notes`, `list_templates`, `create_tag`, `update_tag`, `delete_tag`
 
 ## Code Quality Standards
 
@@ -193,63 +183,15 @@ npm run lint:fix   # Auto-fix linting issues
 - Claude Desktop integration verified
 - Multi-tool workflows tested
 
-## API Rate Limits
+## API Rate Limits & Errors
 
-Respond.io API enforces rate limits:
-- Limits vary by endpoint
-- Headers provide remaining quota
-- Automatic retry with backoff
-- 429 status code handling
-
-## Error Handling Strategy
-
-### Error Types
-1. **Validation Errors** (400)
-   - Invalid input format
-   - Missing required fields
-   - Type mismatches
-
-2. **Authentication Errors** (401)
-   - Invalid API key
-   - Expired credentials
-
-3. **Not Found Errors** (404)
-   - Contact doesn't exist
-   - Invalid resource ID
-
-4. **Rate Limit Errors** (429)
-   - Too many requests
-   - Retry after delay
-
-5. **Server Errors** (500)
-   - Unexpected API issues
-   - Service unavailable
-
-### Error Response Format
-```typescript
-{
-  error: string;
-  code?: number;
-  details?: string;
-}
-```
-
-## Environment Variables
-
-```bash
-# Required
-RESPONDIO_API_KEY=your_api_key
-
-# Optional
-RESPONDIO_BASE_URL=https://api.respond.io/v2
-LOG_LEVEL=info  # debug | info | warn | error
-```
+Respond.io API enforces rate limits (429 handling, retry with backoff). For error types, response format, and environment variables, see [README.md](README.md#api-rate-limits) and [README.md](README.md#error-handling).
 
 ## Dependencies
 
 ### Production
 - `@modelcontextprotocol/sdk`: MCP protocol implementation
-- `axios`: HTTP client with interceptors
+- `@respond-io/typescript-sdk`: Respond.io API SDK (includes HTTP client internally)
 - `dotenv`: Environment configuration
 
 ### Development
@@ -382,38 +324,10 @@ function sendMessage(args: any) { }
 - [ ] Enhanced caching
 - [ ] Multi-workspace
 
-## Contributing
-
-We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for:
-- Code style guidelines
-- Development setup
-- Pull request process
-- Issue reporting
-
-## Support & Community
-
-- **Documentation**: Complete guides and API reference
-- **Issues**: GitHub issue tracker
-- **Discussions**: GitHub discussions
-- **Email**: [Your support email]
-
-## License
-
-MIT License - Free for commercial and personal use
-
-## Acknowledgments
-
-- **Anthropic**: Model Context Protocol specification
-- **Respond.io**: API and platform
-- **Contributors**: Community contributors
-- **TypeScript**: Type-safe JavaScript
-
 ## Quick Links
 
 - 📖 [Setup Guide](SETUP_GUIDE.md)
-- 🔧 [API Reference](API_REFERENCE.md)
 - 🤝 [Contributing](CONTRIBUTING.md)
-- 📝 [Changelog](CHANGELOG.md)
 - 🔒 [Security](README.md#security-best-practices)
 
 ---
