@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.11](https://github.com/respond-io/mcp-server/compare/v0.2.10...v0.2.11) (2026-02-05)
+
+
+### Bug Fixes
+
+* prevent non-JSON output on stdout for MCP stdio transport ([9f73c00](https://github.com/respond-io/mcp-server/commit/9f73c00a8c574fa8fae0dcf66e774c14ad1ddfa7))
+* prevent non-JSON output on stdout for MCP stdio transport ([9a35a37](https://github.com/respond-io/mcp-server/commit/9a35a37cdb2aa5330e1ba1bad0c02973a55e0d8c))
+
 ## [0.2.10](https://github.com/respond-io/mcp-server/compare/v0.2.9...v0.2.10) (2026-02-05)
 
 
