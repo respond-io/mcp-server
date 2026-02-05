@@ -10,7 +10,6 @@
     "scripts": {
         "prebuild": "npm run clean",
         "build": "tsc && chmod +x dist/index.js",
-        "postbuild": "./.postbuild.sh",
         "dev": "tsx watch src/index.ts",
         "start": "node dist/index.js",
         "start:stdio": "MCP_SERVER_MODE=stdio node dist/index.js",
@@ -68,7 +67,7 @@
     "homepage": "https://github.com/respond-io/mcp-server#readme",
     "dependencies": {
         "@modelcontextprotocol/sdk": "^1.20.2",
-        "@respond-io/typescript-sdk": "^1.2.0",
+        "@respond-io/typescript-sdk": "https://registry.npmjs.org/@respond-io/typescript-sdk/-/typescript-sdk-1.2.0.tgz",
         "cors": "^2.8.5",
         "express": "^5.1.0",
         "zod": "^3.24.2"
@@ -104,6 +103,6 @@
         "README.md",
         "LICENSE",
         "package.json",
-        ".npmrc"
+        "CHANGELOG.md"
     ]
 }
