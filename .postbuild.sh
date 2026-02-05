@@ -6,7 +6,6 @@ cp LICENSE ./dist/LICENSE
 jq '
   .main = "index.js" |
   .types = "index.d.ts" |
-  .bin |= with_entries(.value = "index.js") |
-  del(.config)
+  .bin |= with_entries(.value = "index.js")
 ' ./dist/package.json > ./dist/package.tmp.json && \
 mv ./dist/package.tmp.json ./dist/package.json

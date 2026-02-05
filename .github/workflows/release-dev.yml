@@ -74,6 +74,7 @@ jobs:
           node-version: 20
           registry-url: 'https://npm.pkg.github.com'
       - run: npm ci --ignore-scripts
+      - run: rm .npmrc # Remove npmrc to avoid publishing issues
       - run: npm run release:dev
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

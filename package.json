@@ -104,8 +104,5 @@
         "README.md",
         "LICENSE",
         "package.json"
-    ],
-    "config": {
-        "registry": "https://registry.npmjs.org/"
-    }
+    ]
 }
