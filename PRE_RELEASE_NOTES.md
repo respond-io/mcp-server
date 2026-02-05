@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.4](https://github.com/respond-io/mcp-server/compare/v0.2.3...v0.2.4) (2026-02-05)
+
+
+### Bug Fixes
+
+* Remove .config field from package.json in postbuild script ([929ab73](https://github.com/respond-io/mcp-server/commit/929ab733f98f5edd2acb8f51956f289d57aa6e8c))
+* Remove .config field from package.json in postbuild script ([b959c96](https://github.com/respond-io/mcp-server/commit/b959c969a2531c8ed3ad319cd64e25f9dd87155c))
+
 ## [0.2.3](https://github.com/respond-io/mcp-server/compare/v0.2.2...v0.2.3) (2026-02-05)
 
 
