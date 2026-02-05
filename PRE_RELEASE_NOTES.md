@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.7](https://github.com/respond-io/mcp-server/compare/v0.2.6...v0.2.7) (2026-02-05)
+
+
+### Bug Fixes
+
+* Update release-dev workflow to publish tarball to GitHub Packages and set NODE_AUTH_TOKEN environment variable ([9420063](https://github.com/respond-io/mcp-server/commit/9420063309c1a3a72e2afb4c44fea7fe5c14efb8))
+* Update release-dev workflow to publish tarball to GitHub Packages and set NODE_AUTH_TOKEN environment variable ([1f73931](https://github.com/respond-io/mcp-server/commit/1f7393108ef850dc2f37db85e943f6e02165591f))
+
 ## [0.2.6](https://github.com/respond-io/mcp-server/compare/v0.2.5...v0.2.6) (2026-02-05)
 
 
