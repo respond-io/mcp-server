@@ -78,9 +78,13 @@ jobs:
       - run: npm ci --ignore-scripts
       - name: Pack, remove .npmrc, then publish tarball
         run: |
-          PACKAGE=$(npm pack)
+          PACKAGE_NAME=$(jq -r .name package.json | sed 's/^@//;s/\//-/g')
+          VERSION=$(jq -r .version package.json)
+          TARBALL="${PACKAGE_NAME}-${VERSION}.tgz"
+          npm pack
           rm -f .npmrc
-          npm publish --registry https://npm.pkg.github.com/ "$PACKAGE"
+          test -f "$TARBALL" || (echo "Expected tarball $TARBALL not found" && exit 1)
+          npm publish --registry https://npm.pkg.github.com/ "$TARBALL"
 
   # notify_slack:
   #   needs: [audit, tests, create_release, publish_release]
