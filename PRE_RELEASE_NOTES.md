@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.3](https://github.com/respond-io/mcp-server/compare/v0.2.2...v0.2.3) (2026-02-05)
+
+
+### Bug Fixes
+
+* Update release:dev script to use GitHub Packages registry and remove redundant npmrc override ([cf198e0](https://github.com/respond-io/mcp-server/commit/cf198e04d6546a373041193c030111c6d93a3362))
+* Update release:dev script to use GitHub Packages registry and remove redundant npmrc override ([021d515](https://github.com/respond-io/mcp-server/commit/021d515bf8a724ca1010224474e82d7b30eea9bd))
+
 ## [0.2.2](https://github.com/respond-io/mcp-server/compare/v0.2.1...v0.2.2) (2026-02-05)
 
 
