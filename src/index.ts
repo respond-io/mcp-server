@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { API_CONFIG, APP_CONFIG } from "./constants.js";
 import { HttpStreamProtocol, StdioProtocol } from "./protocol/index.js";
 import { initializeClientMonitoring } from "./utils/api.js";
