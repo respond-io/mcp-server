@@ -8,7 +8,9 @@
         "@respond-io/mcp-server": "dist/index.js"
     },
     "scripts": {
+        "prebuild": "npm run clean",
         "build": "tsc && chmod +x dist/index.js",
+        "postbuild": "./.postbuild.sh",
         "dev": "tsx watch src/index.ts",
         "start": "node dist/index.js",
         "start:stdio": "MCP_SERVER_MODE=stdio node dist/index.js",
@@ -23,9 +25,7 @@
         "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
         "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
         "test:coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
-        "clean": "rm -rf dist",
         "prepare": "npm run build",
-        "prepublishOnly": "npm run lint && npm run type-check && npm run build",
         "verify-registry": "npm config get registry",
         "docker:build": "docker build -t respondio-mcp-server .",
         "docker:run": "docker run -p 3000:3000 --env-file .env respondio-mcp-server",
@@ -33,9 +33,12 @@
         "docker:compose:down": "docker-compose down",
         "docker:compose:logs": "docker-compose logs -f",
         "health-check": "curl -f http://localhost:3000/health || exit 1",
-        "version:patch": "npm version patch && git push && git push --tags",
-        "version:minor": "npm version minor && git push && git push --tags",
-        "version:major": "npm version major && git push && git push --tags"
+        "validate": "npm run lint && npm run type-check && npm run test:coverage",
+        "prepublishOnly": "npm run validate && npm run build && cd dist",
+        "prepack": "npm run build",
+        "clean": "rm -rf dist coverage",
+        "release:dev": "npm publish",
+        "release": "npm publish --registry https://registry.npmjs.org/ --access public || (echo 'Release failed' && exit 1)"
     },
     "keywords": [
         "mcp",
