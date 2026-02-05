@@ -37,7 +37,7 @@
         "prepublishOnly": "npm run validate && npm run build && cd dist",
         "prepack": "npm run build",
         "clean": "rm -rf dist coverage",
-        "release:dev": "npm publish",
+        "release:dev": "npm publish --registry https://npm.pkg.github.com/",
         "release": "npm publish --registry https://registry.npmjs.org/ --access public || (echo 'Release failed' && exit 1)"
     },
     "keywords": [
