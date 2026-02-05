@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.9](https://github.com/respond-io/mcp-server/compare/v0.2.8...v0.2.9) (2026-02-05)
+
+
+### Bug Fixes
+
+* Remove postbuild script and update package.json to streamline build process and dependency management ([0284d4a](https://github.com/respond-io/mcp-server/commit/0284d4a197bd6f2442efd3f8a4aecc384a6495c9))
+* Remove postbuild script and update package.json to streamline build process and dependency management ([9df393d](https://github.com/respond-io/mcp-server/commit/9df393d12352452391814916119ed306f1cc6004))
+
 ## [0.2.8](https://github.com/respond-io/mcp-server/compare/v0.2.7...v0.2.8) (2026-02-05)
 
 
