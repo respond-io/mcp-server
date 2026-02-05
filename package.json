@@ -103,6 +103,7 @@
         "dist",
         "README.md",
         "LICENSE",
-        "package.json"
+        "package.json",
+        ".npmrc"
     ]
 }
