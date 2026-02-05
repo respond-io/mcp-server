@@ -67,8 +67,6 @@ jobs:
     if: github.event.pull_request.merged == true && needs.create_release.outputs.release_created == 'true'
     runs-on: ubuntu-latest
     needs: create_release
-    env:
-      NODE_AUTH_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
@@ -76,15 +74,10 @@ jobs:
           node-version: 20
           registry-url: 'https://npm.pkg.github.com'
       - run: npm ci --ignore-scripts
-      - name: Pack, remove .npmrc, then publish tarball
-        run: |
-          PACKAGE_NAME=$(jq -r .name package.json | sed 's/^@//;s/\//-/g')
-          VERSION=$(jq -r .version package.json)
-          TARBALL="${PACKAGE_NAME}-${VERSION}.tgz"
-          npm pack
-          rm -f .npmrc
-          test -f "$TARBALL" || (echo "Expected tarball $TARBALL not found" && exit 1)
-          npm publish --registry https://npm.pkg.github.com/ "$TARBALL"
+      - run: rm .npmrc # Remove npmrc to avoid publishing issues
+      - run: npm run release:dev
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # notify_slack:
   #   needs: [audit, tests, create_release, publish_release]
