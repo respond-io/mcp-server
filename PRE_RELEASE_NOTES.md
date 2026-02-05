@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.8](https://github.com/respond-io/mcp-server/compare/v0.2.7...v0.2.8) (2026-02-05)
+
+
+### Bug Fixes
+
+* Update release-dev workflow to correctly publish tarball using package name and version ([c02869f](https://github.com/respond-io/mcp-server/commit/c02869f83329a4d06503a5a2714a6f78f53d55cc))
+* Update release-dev workflow to correctly publish tarball using package name and version ([52e0d0a](https://github.com/respond-io/mcp-server/commit/52e0d0abe8ac867b931cc33486b463a6918e8d5a))
+
 ## [0.2.7](https://github.com/respond-io/mcp-server/compare/v0.2.6...v0.2.7) (2026-02-05)
 
 
