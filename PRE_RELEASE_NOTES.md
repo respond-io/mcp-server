@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.10](https://github.com/respond-io/mcp-server/compare/v0.2.9...v0.2.10) (2026-02-05)
+
+
+### Bug Fixes
+
+* Add shebang to index.ts for executable script support ([ccff54c](https://github.com/respond-io/mcp-server/commit/ccff54c76950711eabd1fafbc18c0bae7c3432bf))
+* Add shebang to index.ts for executable script support ([f638dd8](https://github.com/respond-io/mcp-server/commit/f638dd8a55e9fe7628b7c72e98e51c22f5db8c83))
+
 ## [0.2.9](https://github.com/respond-io/mcp-server/compare/v0.2.8...v0.2.9) (2026-02-05)
 
 
