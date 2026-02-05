@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.5](https://github.com/respond-io/mcp-server/compare/v0.2.4...v0.2.5) (2026-02-05)
+
+
+### Bug Fixes
+
+* Clean up package.json by removing the config field and update postbuild script to streamline bin entry assignment ([0198554](https://github.com/respond-io/mcp-server/commit/01985544dcc3ace90cf20c406683cb82cfae3930))
+* Clean up package.json by removing the config field and update postbuild script to streamline bin entry assignment ([fda7ecc](https://github.com/respond-io/mcp-server/commit/fda7ecc3ecf20e8f0b261484d813968139e1802d))
+
 ## [0.2.4](https://github.com/respond-io/mcp-server/compare/v0.2.3...v0.2.4) (2026-02-05)
 
 
