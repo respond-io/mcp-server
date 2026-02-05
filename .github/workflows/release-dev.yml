@@ -74,6 +74,8 @@ jobs:
           node-version: 20
           registry-url: 'https://npm.pkg.github.com'
       - run: npm ci --ignore-scripts
+      - name: Use GitHub Packages for @respond-io (override .npmrc)
+        run: echo "@respond-io:registry=https://npm.pkg.github.com/" >> .npmrc
       - run: npm run release:dev
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
