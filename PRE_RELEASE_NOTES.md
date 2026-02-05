@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.6](https://github.com/respond-io/mcp-server/compare/v0.2.5...v0.2.6) (2026-02-05)
+
+
+### Bug Fixes
+
+* Add .npmrc to package.json and update release-dev workflow to set publishConfig for GitHub Packages ([926cd2b](https://github.com/respond-io/mcp-server/commit/926cd2bcd6a54a03ea098a870d95b2a20147dfee))
+* Add .npmrc to package.json and update release-dev workflow to set publishConfig for GitHub Packages ([7a3f0e2](https://github.com/respond-io/mcp-server/commit/7a3f0e235639ae37f149380acc661e95b950372c))
+
 ## [0.2.5](https://github.com/respond-io/mcp-server/compare/v0.2.4...v0.2.5) (2026-02-05)
 
 
