@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.2](https://github.com/respond-io/mcp-server/compare/v0.2.1...v0.2.2) (2026-02-05)
+
+
+### Bug Fixes
+
+* Configure GitHub Packages for [@respond-io](https://github.com/respond-io) in release workflow ([3990ea6](https://github.com/respond-io/mcp-server/commit/3990ea6602e0cb244fd8022c77b601fcdad20d0d))
+* Configure GitHub Packages for [@respond-io](https://github.com/respond-io) in release workflow ([ddfd7a3](https://github.com/respond-io/mcp-server/commit/ddfd7a31c90d06b76777b238a3bf26e4dfbb3d9a))
+
 ## [0.2.1](https://github.com/respond-io/mcp-server/compare/v0.2.0...v0.2.1) (2026-02-05)
 
 
