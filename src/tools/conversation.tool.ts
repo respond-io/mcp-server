@@ -1,8 +1,12 @@
 import { z } from "zod";
-import { AxiosError, AxiosResponse } from "axios";
 import { BaseTool } from "./BaseTool.js";
-import { createApiClient, handleApiError, handleApiResponse } from "../utils/api.js";
-import { AssignConversationArgs, Ctx, Tool, UpdateConversationStatusArgs } from "../types.js";
+import {
+  createSdkClient,
+  formatContactIdentifier,
+  handleSdkError,
+  handleSdkResponse,
+} from "../utils/api.js";
+import { Ctx, Tool } from "../types.js";
 
 /**
  * A tool for managing conversations.
@@ -27,18 +31,14 @@ export class ConversationTool extends BaseTool {
           .describe("The user ID or email of the assignee. Set to null to unassign."),
       },
       handler: async (args, ctx) => {
-        const { identifier, assignee } = args as AssignConversationArgs;
+        const { identifier, assignee } = args as { identifier: string; assignee: string | null };
         try {
-          const apiClient = createApiClient(this.apiBaseUrl, this.mode, ctx as Ctx);
-          const response: AxiosResponse = await apiClient.post(
-            `/contact/${identifier}/conversation/assignee`,
-            {
-              assignee,
-            }
-          );
-          return handleApiResponse(response);
+          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx);
+          const formattedIdentifier = formatContactIdentifier(identifier);
+          const result = await sdkClient.conversations.assign(formattedIdentifier, { assignee });
+          return handleSdkResponse(result);
         } catch (error) {
-          return handleApiError(error as AxiosError);
+          return handleSdkError(error);
         }
       },
     },
@@ -62,20 +62,23 @@ export class ConversationTool extends BaseTool {
           .describe("A summary of the conversation, required when closing."),
       },
       handler: async (args, ctx) => {
-        const { identifier, status, category, summary } = args as UpdateConversationStatusArgs;
+        const { identifier, status, category, summary } = args as {
+          identifier: string;
+          status: string;
+          category?: string;
+          summary?: string;
+        };
         try {
-          const apiClient = createApiClient(this.apiBaseUrl, this.mode, ctx as Ctx);
-          const response: AxiosResponse = await apiClient.post(
-            `/contact/${identifier}/conversation/status`,
-            {
-              status,
-              category,
-              summary,
-            }
-          );
-          return handleApiResponse(response);
+          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx);
+          const formattedIdentifier = formatContactIdentifier(identifier);
+          const result = await sdkClient.conversations.updateStatus(formattedIdentifier, {
+            status: status as "open" | "close",
+            category,
+            summary,
+          });
+          return handleSdkResponse(result);
         } catch (error) {
-          return handleApiError(error as AxiosError);
+          return handleSdkError(error);
         }
       },
     },

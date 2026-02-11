@@ -1,8 +1,12 @@
 import { z } from "zod";
-import { AxiosError } from "axios";
 import { BaseTool } from "./BaseTool.js";
-import { createApiClient, handleApiError, handleApiResponse } from "../utils/api.js";
-import { CreateCommentArgs, Ctx, Tool } from "../types.js";
+import {
+  createSdkClient,
+  formatContactIdentifier,
+  handleSdkError,
+  handleSdkResponse,
+} from "../utils/api.js";
+import { Ctx, Tool } from "../types.js";
 
 /**
  * A tool for managing comments on contacts.
@@ -29,15 +33,16 @@ export class CommentTool extends BaseTool {
           ),
       },
       handler: async (args, ctx) => {
-        const { identifier, text } = args as CreateCommentArgs;
+        const { identifier, text } = args as { identifier: string; text: string };
         try {
-          const apiClient = createApiClient(this.apiBaseUrl, this.mode, ctx as Ctx);
-          const response = await apiClient.post(`/contact/${identifier}/comment`, {
+          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx);
+          const formattedIdentifier = formatContactIdentifier(identifier);
+          const result = await sdkClient.comments.create(formattedIdentifier, {
             text,
           });
-          return handleApiResponse(response);
+          return handleSdkResponse(result);
         } catch (error) {
-          return handleApiError(error as AxiosError);
+          return handleSdkError(error);
         }
       },
     },

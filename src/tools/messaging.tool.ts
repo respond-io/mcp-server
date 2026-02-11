@@ -1,18 +1,23 @@
 import { z } from "zod";
-import { AxiosError, AxiosResponse } from "axios";
 import { BaseTool } from "./BaseTool.js";
-import { createApiClient, handleApiError, handleApiResponse } from "../utils/api.js";
-import { Ctx, GetMessageArgs, MessagePayload, SendMessageArgs, Tool } from "../types.js";
+import {
+  createSdkClient,
+  formatContactIdentifier,
+  handleSdkError,
+  handleSdkResponse,
+} from "../utils/api.js";
+import { Message } from "@respond-io/typescript-sdk";
+import { Ctx, Tool } from "../types.js";
 
 /**
  * A tool for sending and retrieving messages.
- * This tool provides functionalities for sending various types of messages to a contact
- * and retrieving a specific message by its ID.
+ * This tool provides functionalities for sending various types of messages to a contact,
+ * retrieving a specific message by its ID, and listing messages for a contact.
  */
 export class MessagingTool extends BaseTool {
   /**
    * The list of tools provided by the MessagingTool.
-   * It includes tools for sending a message and getting a message.
+   * It includes tools for sending a message, getting a message, and listing messages.
    */
   protected tools: Tool[] = [
     {
@@ -60,9 +65,16 @@ export class MessagingTool extends BaseTool {
           .describe("The language code of the WhatsApp template."),
       },
       handler: async (args, ctx) => {
-        const { identifier, channelId, messageType, ...messageData } = args as SendMessageArgs;
+        const { identifier, channelId, messageType, ...messageData } = args as {
+          identifier: string;
+          channelId?: number | null;
+          messageType: string;
+          [key: string]: unknown;
+        };
         try {
-          let message: MessagePayload;
+          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx);
+          const formattedIdentifier = formatContactIdentifier(identifier);
+          let message: Message;
 
           switch (messageType) {
             case "text":
@@ -98,14 +110,13 @@ export class MessagingTool extends BaseTool {
               throw new Error(`Unsupported message type: ${messageType}`);
           }
 
-          const apiClient = createApiClient(this.apiBaseUrl, this.mode, ctx as Ctx);
-          const response: AxiosResponse = await apiClient.post(`/contact/${identifier}/message`, {
+          const result = await sdkClient.messaging.send(formattedIdentifier, {
             channelId,
             message,
           });
-          return handleApiResponse(response);
+          return handleSdkResponse(result);
         } catch (error) {
-          return handleApiError(error as AxiosError);
+          return handleSdkError(error);
         }
       },
     },
@@ -119,15 +130,52 @@ export class MessagingTool extends BaseTool {
         messageId: z.number().describe("The ID of the message to retrieve."),
       },
       handler: async (args, ctx) => {
-        const { identifier, messageId } = args as GetMessageArgs;
+        const { identifier, messageId } = args as { identifier: string; messageId: number };
         try {
-          const apiClient = createApiClient(this.apiBaseUrl, this.mode, ctx as Ctx);
-          const response: AxiosResponse = await apiClient.get(
-            `/contact/${identifier}/message/${messageId}`
-          );
-          return handleApiResponse(response);
+          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx);
+          const formattedIdentifier = formatContactIdentifier(identifier);
+          const message = await sdkClient.messaging.get(formattedIdentifier, messageId);
+          return handleSdkResponse(message);
         } catch (error) {
-          return handleApiError(error as AxiosError);
+          return handleSdkError(error);
+        }
+      },
+    },
+    {
+      name: "list_messages",
+      description: "List messages for a contact with optional pagination.",
+      schema: {
+        identifier: z
+          .string()
+          .describe("The contact's identifier. Can be the contact's ID, email, or phone number."),
+        limit: z
+          .number()
+          .min(1)
+          .max(100)
+          .default(20)
+          .describe("The number of messages to return, between 1 and 100."),
+        cursorId: z.number().optional().describe("The cursor ID for pagination."),
+      },
+      handler: async (args, ctx) => {
+        const {
+          identifier,
+          limit = 20,
+          cursorId,
+        } = args as {
+          identifier: string;
+          limit?: number;
+          cursorId?: number;
+        };
+        try {
+          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx);
+          const formattedIdentifier = formatContactIdentifier(identifier);
+          const result = await sdkClient.messaging.list(formattedIdentifier, {
+            limit,
+            cursorId,
+          });
+          return handleSdkResponse(result);
+        } catch (error) {
+          return handleSdkError(error);
         }
       },
     },

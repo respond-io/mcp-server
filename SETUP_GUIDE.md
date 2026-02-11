@@ -345,7 +345,7 @@ Once setup is complete:
 
 1. Review the [README.md](README.md) for usage examples
 2. Explore available tools with Claude
-3. Check the [API Documentation](API_REFERENCE.md) for detailed information
+3. Check the [README](README.md) for tool list and examples, and [Respond.io Developer API](https://docs.respond.io) for API details
 4. Read best practices for using the MCP server
 
 ---

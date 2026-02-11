@@ -335,7 +335,7 @@ const executeYourTool = async (name: string, args: YourToolArgs) => {
 };
 ```
 
-5. **Update documentation** in README.md and API_REFERENCE.md
+5. **Update documentation** in README.md as needed
 
 ## Documentation
 
@@ -349,11 +349,10 @@ Update documentation when:
 
 ### Documentation Files
 
-- **README.md** - Overview and quick start
-- **SETUP_GUIDE.md** - Detailed setup instructions
-- **API_REFERENCE.md** - Complete API documentation
-- **CONTRIBUTING.md** - This file
-- Code comments - For complex logic
+- **README.md** – Overview, features, tool list, and usage examples
+- **SETUP_GUIDE.md** – Detailed setup instructions
+- **CONTRIBUTING.md** – This file
+- Code comments – For complex logic
 
 ## Getting Help
 
