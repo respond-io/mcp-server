@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.1](https://github.com/respond-io/mcp-server/compare/v1.0.0...v1.0.1) (2026-02-11)
+
+
+### Bug Fixes
+
+* Test commit for checking npm publish release flow ([7dd550b](https://github.com/respond-io/mcp-server/commit/7dd550b9a13c14474cf4b1aa1eaf3e8e833ba625))
+* Test commit for checking npm publish release flow ([a025262](https://github.com/respond-io/mcp-server/commit/a025262ca6478cca8a5c8637f1e71c7016c80660))
+
 ## [1.0.0](https://github.com/respond-io/mcp-server/compare/v0.1.0...v1.0.0) (2026-02-11)
 
 
