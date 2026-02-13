@@ -25,8 +25,12 @@ const toStringValue = (value: unknown): string | undefined => {
     return value;
   }
   if (Array.isArray(value)) {
-    const first = value.find((entry) => typeof entry === "string" && entry.length > 0);
-    return typeof first === "string" ? first : undefined;
+    for (const entry of value) {
+      if (typeof entry === "string" && entry.length > 0) {
+        return entry;
+      }
+    }
+    return undefined;
   }
   return undefined;
 };

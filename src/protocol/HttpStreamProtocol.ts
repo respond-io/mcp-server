@@ -52,16 +52,15 @@ export class HttpStreamProtocol extends BaseProtocol {
     this.debug = options.debug;
   }
 
-  // eslint-disable-next-line @typescript-eslint/require-await
-  public async init(): Promise<InitResult> {
+  public init(): Promise<InitResult> {
     if (this.httpServer) {
-      return {
+      return Promise.resolve({
         app: this.app!,
         httpServer: this.httpServer,
         transport: this.transport,
         close: this.close.bind(this),
         port: this.port,
-      };
+      });
     }
 
     const app = this.options.app ?? express();
@@ -84,8 +83,7 @@ export class HttpStreamProtocol extends BaseProtocol {
 
     app.use("/mcp", tokenVerifier);
     app.all("/mcp", async (req: Request, res: Response) => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const parsedBody = req.method === "POST" ? req.body : undefined;
+      const parsedBody = req.method === "POST" ? (req.body as unknown) : undefined;
       const sessionHeader = req.headers["mcp-session-id"];
       const sessionId =
         typeof sessionHeader === "string"
@@ -210,13 +208,13 @@ export class HttpStreamProtocol extends BaseProtocol {
     this.app = app;
     this.httpServer = httpServer;
 
-    return {
+    return Promise.resolve({
       app,
       httpServer,
       transport: this.transport,
       close: this.close.bind(this),
       port: this.port,
-    };
+    });
   }
 
   public async close(): Promise<void> {

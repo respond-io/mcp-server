@@ -184,7 +184,6 @@ class SdkClientManager {
    */
   private setupGracefulShutdown(): void {
     const shutdown = () => {
-      // eslint-disable-next-line no-console
       console.warn("Shutting down SDK client manager...");
       this.stopHealthChecks();
       // Close any connections if needed
@@ -239,13 +238,11 @@ export function getSdkClientStats() {
  * Logs cached client stats periodically; SdkClientManager already runs health checks.
  */
 export function initializeClientMonitoring(): void {
-  // eslint-disable-next-line no-console
   console.warn("SDK Client monitoring initialized");
 
   const statsInterval = setInterval(
     () => {
       const stats = getSdkClientStats();
-      // eslint-disable-next-line no-console
       console.warn("Client Stats:", {
         total: stats.totalClients,
         healthy: stats.healthyClients,
