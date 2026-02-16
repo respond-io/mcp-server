@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.1.0](https://github.com/respond-io/mcp-server/compare/v1.0.1...v1.1.0) (2026-02-16)
+
+
+### Features
+
+* Enhance token verification middleware to support tokens from query parameters ([bda0ee9](https://github.com/respond-io/mcp-server/commit/bda0ee932f249bb0cedfc4c7dcb629794d877fe6))
+* Integrate API_KEY into token verification and configuration ([70eeb37](https://github.com/respond-io/mcp-server/commit/70eeb37e9277063a8d5857d1c6cb88cf27312cc2))
+
+
+### Bug Fixes
+
+* Improve token handling and streamline HttpStreamProtocol initialization ([745662f](https://github.com/respond-io/mcp-server/commit/745662f6db0377903c9cf479c980391efee2868d))
+* Update qs package to 6.15.0 for security vulnerability fix ([292880b](https://github.com/respond-io/mcp-server/commit/292880b3b29d38667a7cf4b429a902d9dcc36bce))
+* update qs package to version 6.15.0 in package-lock.json ([0e54202](https://github.com/respond-io/mcp-server/commit/0e542021b71806e8d56ad6c63b67d3d852ca462c))
+
 ## [1.0.1](https://github.com/respond-io/mcp-server/compare/v1.0.0...v1.0.1) (2026-02-11)
 
 
