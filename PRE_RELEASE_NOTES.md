@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.3.0](https://github.com/respond-io/mcp-server/compare/v0.2.11...v0.3.0) (2026-02-16)
+
+
+### Features
+
+* Enhance token verification middleware to support tokens from query parameters ([bda0ee9](https://github.com/respond-io/mcp-server/commit/bda0ee932f249bb0cedfc4c7dcb629794d877fe6))
+* Integrate API_KEY into token verification and configuration ([70eeb37](https://github.com/respond-io/mcp-server/commit/70eeb37e9277063a8d5857d1c6cb88cf27312cc2))
+
+
+### Bug Fixes
+
+* Improve token handling and streamline HttpStreamProtocol initialization ([745662f](https://github.com/respond-io/mcp-server/commit/745662f6db0377903c9cf479c980391efee2868d))
+* Resolve Claude Desktop compatibility issues with token handling ([b71a157](https://github.com/respond-io/mcp-server/commit/b71a157359cdf5554b230a2d75c4359cbf263b61))
+* Test commit for checking npm publish release flow ([7dd550b](https://github.com/respond-io/mcp-server/commit/7dd550b9a13c14474cf4b1aa1eaf3e8e833ba625))
+* Test commit for checking npm publish release flow ([a025262](https://github.com/respond-io/mcp-server/commit/a025262ca6478cca8a5c8637f1e71c7016c80660))
+* update axios and its dependencies to latest versions in package-lock.json ([535f360](https://github.com/respond-io/mcp-server/commit/535f36083edaff524a51fd6d063456d6e1ad5fc6))
+* update axios and its dependencies to latest versions in package-lock.json ([bde87c6](https://github.com/respond-io/mcp-server/commit/bde87c6e3430ec8af0a86962f793530a32a63f2f))
+
 ## [0.2.11](https://github.com/respond-io/mcp-server/compare/v0.2.10...v0.2.11) (2026-02-05)
 
 
