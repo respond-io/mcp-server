@@ -1,6 +1,7 @@
 import { RespondIO, RespondIOError, type ContactIdentifier } from "@respond-io/typescript-sdk";
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { Ctx } from "../types.js";
+import { API_CONFIG } from "../constants.js";
 
 /**
  * Configuration for SDK client creation
@@ -184,7 +185,6 @@ class SdkClientManager {
    */
   private setupGracefulShutdown(): void {
     const shutdown = () => {
-      // eslint-disable-next-line no-console
       console.warn("Shutting down SDK client manager...");
       this.stopHealthChecks();
       // Close any connections if needed
@@ -239,13 +239,11 @@ export function getSdkClientStats() {
  * Logs cached client stats periodically; SdkClientManager already runs health checks.
  */
 export function initializeClientMonitoring(): void {
-  // eslint-disable-next-line no-console
   console.warn("SDK Client monitoring initialized");
 
   const statsInterval = setInterval(
     () => {
       const stats = getSdkClientStats();
-      // eslint-disable-next-line no-console
       console.warn("Client Stats:", {
         total: stats.totalClients,
         healthy: stats.healthyClients,
@@ -315,7 +313,7 @@ export function createSdkClient(apiBaseUrl: string, mode: string, ctx: Ctx): Res
   const apiToken =
     mode === "http" && ctx?.requestInfo?.headers?.authorization
       ? ctx.requestInfo.headers.authorization
-      : process.env.RESPONDIO_API_KEY;
+      : API_CONFIG.API_KEY;
 
   if (!apiBaseUrl) {
     throw new Error("RESPONDIO_BASE_URL is not set in the environment");

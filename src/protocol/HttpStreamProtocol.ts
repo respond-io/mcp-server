@@ -1,7 +1,10 @@
 import express, { Request, Response, Express } from "express";
 import cors from "cors";
 import { Server as HttpServer } from "http";
+import { randomUUID } from "crypto";
+import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
+import { isInitializeRequest } from "@modelcontextprotocol/sdk/types.js";
 import { createServer } from "../server.js";
 import { tokenVerifier } from "../middlewares/TokenVerifier.js";
 import { BaseProtocol } from "./BaseProtocol.js";
@@ -22,9 +25,14 @@ type InitOptions = {
 type InitResult = {
   app: Express;
   httpServer: HttpServer;
-  transport: StreamableHTTPServerTransport;
+  transport?: StreamableHTTPServerTransport;
   close: () => Promise<void>;
   port: number;
+};
+
+type SessionContext = {
+  transport: StreamableHTTPServerTransport;
+  server: McpServer;
 };
 
 export class HttpStreamProtocol extends BaseProtocol {
@@ -32,6 +40,7 @@ export class HttpStreamProtocol extends BaseProtocol {
   private httpServer?: HttpServer;
   private transport?: StreamableHTTPServerTransport;
   private closing = false;
+  private readonly sessions = new Map<string, SessionContext>();
   private readonly port: number;
   private readonly apiBaseUrl: string;
   private readonly debug: boolean;
@@ -43,46 +52,138 @@ export class HttpStreamProtocol extends BaseProtocol {
     this.debug = options.debug;
   }
 
-  public async init(): Promise<InitResult> {
+  public init(): Promise<InitResult> {
     if (this.httpServer) {
-      return {
+      return Promise.resolve({
         app: this.app!,
         httpServer: this.httpServer,
-        transport: this.transport!,
+        transport: this.transport,
         close: this.close.bind(this),
         port: this.port,
-      };
+      });
     }
 
     const app = this.options.app ?? express();
 
     app.use(express.json());
     app.use(express.static(this.options.staticDir ?? path.join(process.cwd(), "public")));
-    app.use(
-      cors({
-        origin: this.options.corsOrigin ?? true,
-        methods: "*",
-        allowedHeaders:
-          this.options.allowedHeaders ?? "Authorization, Origin, Content-Type, Accept, *",
-      })
-    );
-    app.options("/mcp", cors());
-
-    const transport = new StreamableHTTPServerTransport({
-      sessionIdGenerator: this.options.sessionIdGenerator,
-    });
+    const corsOptions = {
+      origin: this.options.corsOrigin ?? true,
+      methods: "*",
+      allowedHeaders:
+        this.options.allowedHeaders ??
+        "Authorization, Origin, Content-Type, Accept, Mcp-Session-Id, *",
+      exposedHeaders: ["Mcp-Session-Id"],
+    };
+    app.use(cors(corsOptions));
+    app.options("/mcp", cors(corsOptions));
 
     app.get("/health", (_req: Request, res: Response) => {
       res.status(200).json({ status: "ok" });
     });
 
     app.use("/mcp", tokenVerifier);
-    app.post("/mcp", async (req: Request, res: Response) => {
-      console.error("Received MCP request:", req.body);
+    app.all("/mcp", async (req: Request, res: Response) => {
+      const parsedBody = req.method === "POST" ? (req.body as unknown) : undefined;
+      const sessionHeader = req.headers["mcp-session-id"];
+      const sessionId =
+        typeof sessionHeader === "string"
+          ? sessionHeader
+          : Array.isArray(sessionHeader)
+            ? sessionHeader[0]
+            : undefined;
+
+      // WARNING: Logging request body may expose sensitive data in production
+      if (process.env.DEBUG) {
+        console.error(`Received ${req.method} MCP request:`, parsedBody);
+      }
+
+      let session = sessionId ? this.sessions.get(sessionId) : undefined;
+      let createdSession: SessionContext | undefined;
+      let initializedSessionId: string | undefined;
+
       try {
-        await transport.handleRequest(req, res, req.body);
+        const isInitRequest =
+          req.method === "POST" &&
+          parsedBody !== undefined &&
+          (Array.isArray(parsedBody)
+            ? parsedBody.some((message) => isInitializeRequest(message))
+            : isInitializeRequest(parsedBody));
+
+        if (!session) {
+          if (!sessionId && isInitRequest) {
+            const { server } = createServer({
+              apiBaseUrl: this.apiBaseUrl,
+              debug: this.debug,
+              mode: "http",
+            } as MCPServerOptions);
+
+            const transport = new StreamableHTTPServerTransport({
+              sessionIdGenerator: this.options.sessionIdGenerator ?? (() => randomUUID()),
+              onsessioninitialized: (newSessionId) => {
+                initializedSessionId = newSessionId;
+                this.sessions.set(newSessionId, { transport, server });
+              },
+            });
+
+            transport.onclose = () => {
+              const sid = transport.sessionId;
+              if (!sid) {
+                return;
+              }
+              const activeSession = this.sessions.get(sid);
+              if (!activeSession || activeSession.transport !== transport) {
+                return;
+              }
+              this.sessions.delete(sid);
+              transport.onclose = undefined;
+              void activeSession.server
+                .close()
+                .catch((error) => console.error(`Error closing server for session ${sid}:`, error));
+            };
+
+            await server.connect(transport);
+            session = { transport, server };
+            createdSession = session;
+            if (!this.transport) {
+              this.transport = transport;
+            }
+          } else {
+            res.status(400).json({
+              jsonrpc: "2.0",
+              error: {
+                code: -32000,
+                message: "Bad Request: No valid session ID provided",
+              },
+              id: null,
+            });
+            return;
+          }
+        }
+
+        await session.transport.handleRequest(req, res, parsedBody);
+
+        if (createdSession && !initializedSessionId) {
+          await createdSession.transport.close().catch((error) => {
+            console.error("Error closing uninitialized transport:", error);
+          });
+          await createdSession.server.close().catch((error) => {
+            console.error("Error closing uninitialized server:", error);
+          });
+        }
       } catch (error) {
         console.error("Error handling MCP request:", error);
+        if (createdSession) {
+          if (initializedSessionId) {
+            this.sessions.delete(initializedSessionId);
+          }
+          await createdSession.transport.close().catch((closeError) => {
+            console.error("Error closing transport after request failure:", closeError);
+          });
+          await createdSession.server.close().catch((closeError) => {
+            console.error("Error closing server after request failure:", closeError);
+          });
+        }
         if (!res.headersSent) {
           res.status(500).json({
             jsonrpc: "2.0",
@@ -95,35 +196,6 @@ export class HttpStreamProtocol extends BaseProtocol {
         }
       }
     });
-
-    const methodNotAllowed = (req: Request, res: Response) => {
-      console.error(`Received ${req.method} MCP request`);
-      res.status(405).json({
-        jsonrpc: "2.0",
-        error: {
-          code: -32000,
-          message: "Method not allowed.",
-        },
-        id: null,
-      });
-    };
-
-    app.get("/mcp", methodNotAllowed);
-    app.delete("/mcp", methodNotAllowed);
-
-    const { server } = createServer({
-      apiBaseUrl: this.apiBaseUrl,
-      debug: this.debug,
-      mode: "http",
-    } as MCPServerOptions);
-
-    try {
-      await server.connect(transport);
-      console.error("Server connected successfully");
-    } catch (error) {
-      console.error("Failed to set up the server:", error);
-      throw error;
-    }
 
     const httpServer: HttpServer = app.listen(this.port, () => {
       console.error(`MCP Streamable HTTP Server listening on port ${this.port}`);
@@ -140,42 +212,38 @@ export class HttpStreamProtocol extends BaseProtocol {
 
     this.app = app;
     this.httpServer = httpServer;
-    this.transport = transport;
 
-    const originalClose = this.close.bind(this);
-    this.close = async () => {
-      if (this.closing) {
-        return;
-      }
-      this.closing = true;
-
-      try {
-        console.error("Closing transport");
-        await transport.close();
-      } catch (error) {
-        console.error("Error closing transport:", error);
-      }
-
-      try {
-        await server.close();
-        console.error("Server shutdown complete");
-      } catch (error) {
-        console.error("Error closing server:", error);
-      }
-
-      await originalClose();
-    };
-
-    return {
+    return Promise.resolve({
       app,
       httpServer,
-      transport,
+      transport: this.transport,
       close: this.close.bind(this),
       port: this.port,
-    };
+    });
   }
 
   public async close(): Promise<void> {
+    if (this.closing) {
+      return;
+    }
+    this.closing = true;
+
+    for (const [sessionId, session] of this.sessions.entries()) {
+      this.sessions.delete(sessionId);
+      try {
+        console.error(`Closing transport for session ${sessionId}`);
+        session.transport.onclose = undefined;
+        await session.transport.close();
+      } catch (error) {
+        console.error(`Error closing transport for session ${sessionId}:`, error);
+      }
+      try {
+        await session.server.close();
+      } catch (error) {
+        console.error(`Error closing server for session ${sessionId}:`, error);
+      }
+    }
+
     if (!this.httpServer) {
       return;
     }

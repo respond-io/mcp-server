@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { z } from "zod";
 import { JWTPayload } from "../types.js";
+import { API_CONFIG } from "../constants.js";
 
 // Define the validation schema for the JWT payload
 const jwtPayloadSchema = z.object({
@@ -17,10 +18,10 @@ declare module "express-serve-static-core" {
     user?: JWTPayload;
   }
 }
-
 /**
  * Middleware to verify the authenticity of a JSON Web Token (JWT).
- * This middleware checks for the presence of a Bearer token in the `Authorization` header,
+ * If RESPONDIO_API_KEY is set in the environment, it is used as the authorization token.
+ * Otherwise, this middleware checks for the presence of a Bearer token in the `Authorization` header,
  * validates its format, and ensures the payload contains all the required fields.
  * If the token is valid, the decoded payload is attached to the `req.user` property.
  *
@@ -29,6 +30,13 @@ declare module "express-serve-static-core" {
  * @param {NextFunction} next - The next middleware function in the chain.
  */
 export const tokenVerifier = (req: Request, res: Response, next: NextFunction): void => {
+  // If RESPONDIO_API_KEY is set, use it as the authorization header
+  if (API_CONFIG.API_KEY) {
+    req.headers.authorization = API_CONFIG.API_KEY.startsWith("Bearer ")
+      ? API_CONFIG.API_KEY
+      : `Bearer ${API_CONFIG.API_KEY}`;
+  }
+
   try {
     const authHeader = req.headers.authorization;
 
