@@ -13,7 +13,7 @@ import { initializeClientMonitoring } from "./utils/api.js";
 const startServer = async () => {
   const isHttpMode = process.env.MCP_SERVER_MODE === "http";
 
-  if (!isHttpMode && !process.env.RESPONDIO_API_KEY) {
+  if (!isHttpMode && !API_CONFIG.API_KEY) {
     console.error("RESPONDIO_API_KEY is not set in the environment");
     process.exit(1);
   }
