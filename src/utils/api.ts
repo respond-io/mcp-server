@@ -1,6 +1,7 @@
 import { RespondIO, RespondIOError, type ContactIdentifier } from "@respond-io/typescript-sdk";
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { Ctx } from "../types.js";
+import { API_CONFIG } from "../constants.js";
 
 /**
  * Configuration for SDK client creation
@@ -312,7 +313,7 @@ export function createSdkClient(apiBaseUrl: string, mode: string, ctx: Ctx): Res
   const apiToken =
     mode === "http" && ctx?.requestInfo?.headers?.authorization
       ? ctx.requestInfo.headers.authorization
-      : process.env.RESPONDIO_API_KEY;
+      : API_CONFIG.API_KEY;
 
   if (!apiBaseUrl) {
     throw new Error("RESPONDIO_BASE_URL is not set in the environment");

@@ -9,6 +9,7 @@ export const APP_CONFIG = {
 
 export const API_CONFIG = {
   BASE_URL: process.env.RESPONDIO_BASE_URL || "https://api.respond.io/v2",
+  API_KEY: process.env.RESPONDIO_API_KEY,
   TIMEOUT: 30000, // 30 seconds
   MAX_RETRIES: 3,
   RETRY_DELAY: 1000, // 1 second

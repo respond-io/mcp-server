@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { z } from "zod";
 import { JWTPayload } from "../types.js";
+import { API_CONFIG } from "../constants.js";
 
 // Define the validation schema for the JWT payload
 const jwtPayloadSchema = z.object({
@@ -17,42 +18,10 @@ declare module "express-serve-static-core" {
     user?: JWTPayload;
   }
 }
-
-const TOKEN_QUERY_KEYS = ["token", "auth_token", "authToken", "authorization"] as const;
-
-const toStringValue = (value: unknown): string | undefined => {
-  if (typeof value === "string" && value.length > 0) {
-    return value;
-  }
-  if (Array.isArray(value)) {
-    for (const entry of value) {
-      if (typeof entry === "string" && entry.length > 0) {
-        return entry;
-      }
-    }
-    return undefined;
-  }
-  return undefined;
-};
-
-const getAuthHeaderFromQuery = (req: Request): string | undefined => {
-  for (const key of TOKEN_QUERY_KEYS) {
-    const value = toStringValue(req.query[key]);
-    if (!value) {
-      continue;
-    }
-    if (value.startsWith("Bearer ")) {
-      return value;
-    }
-    return `Bearer ${value}`;
-  }
-  return undefined;
-};
-
 /**
  * Middleware to verify the authenticity of a JSON Web Token (JWT).
- * This middleware checks for the presence of a Bearer token in the `Authorization` header,
- * and if missing, falls back to an auth token passed as a query parameter.
+ * If RESPONDIO_API_KEY is set in the environment, it is used as the authorization token.
+ * Otherwise, this middleware checks for the presence of a Bearer token in the `Authorization` header,
  * validates its format, and ensures the payload contains all the required fields.
  * If the token is valid, the decoded payload is attached to the `req.user` property.
  *
@@ -61,11 +30,18 @@ const getAuthHeaderFromQuery = (req: Request): string | undefined => {
  * @param {NextFunction} next - The next middleware function in the chain.
  */
 export const tokenVerifier = (req: Request, res: Response, next: NextFunction): void => {
+  // If RESPONDIO_API_KEY is set, use it as the authorization header
+  if (API_CONFIG.API_KEY) {
+    req.headers.authorization = API_CONFIG.API_KEY.startsWith("Bearer ")
+      ? API_CONFIG.API_KEY
+      : `Bearer ${API_CONFIG.API_KEY}`;
+  }
+
   try {
-    const authHeader = req.headers.authorization ?? getAuthHeaderFromQuery(req);
+    const authHeader = req.headers.authorization;
 
     if (!authHeader) {
-      res.status(401).json({ error: "No authorization header or token query parameter provided" });
+      res.status(401).json({ error: "No authorization header provided" });
       return;
     }
 

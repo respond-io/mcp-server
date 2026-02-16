@@ -67,15 +67,16 @@ export class HttpStreamProtocol extends BaseProtocol {
 
     app.use(express.json());
     app.use(express.static(this.options.staticDir ?? path.join(process.cwd(), "public")));
-    app.use(
-      cors({
-        origin: this.options.corsOrigin ?? true,
-        methods: "*",
-        allowedHeaders:
-          this.options.allowedHeaders ?? "Authorization, Origin, Content-Type, Accept, *",
-      })
-    );
-    app.options("/mcp", cors());
+    const corsOptions = {
+      origin: this.options.corsOrigin ?? true,
+      methods: "*",
+      allowedHeaders:
+        this.options.allowedHeaders ??
+        "Authorization, Origin, Content-Type, Accept, Mcp-Session-Id, *",
+      exposedHeaders: ["Mcp-Session-Id"],
+    };
+    app.use(cors(corsOptions));
+    app.options("/mcp", cors(corsOptions));
 
     app.get("/health", (_req: Request, res: Response) => {
       res.status(200).json({ status: "ok" });
@@ -91,7 +92,11 @@ export class HttpStreamProtocol extends BaseProtocol {
           : Array.isArray(sessionHeader)
             ? sessionHeader[0]
             : undefined;
-      console.error(`Received ${req.method} MCP request:`, parsedBody);
+
+      // WARNING: Logging request body may expose sensitive data in production
+      if (process.env.DEBUG) {
+        console.error(`Received ${req.method} MCP request:`, parsedBody);
+      }
 
       let session = sessionId ? this.sessions.get(sessionId) : undefined;
       let createdSession: SessionContext | undefined;
