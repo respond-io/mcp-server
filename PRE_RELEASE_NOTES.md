@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.4.0](https://github.com/respond-io/mcp-server/compare/v0.3.0...v0.4.0) (2026-02-27)
+
+
+### Features
+
+* expose templateComponents parameter in send_message tool ([e429367](https://github.com/respond-io/mcp-server/commit/e429367439666e1040ae27b808deef09496c2414))
+
+
+### Bug Fixes
+
+* update dependencies and devDependencies in package.json and package-lock.json ([3ff1f8b](https://github.com/respond-io/mcp-server/commit/3ff1f8b9dc7c76f29f1dcdbfc86c893051ed160a))
+* Update qs package to 6.15.0 for security vulnerability fix ([292880b](https://github.com/respond-io/mcp-server/commit/292880b3b29d38667a7cf4b429a902d9dcc36bce))
+* update qs package to version 6.15.0 in package-lock.json ([0e54202](https://github.com/respond-io/mcp-server/commit/0e542021b71806e8d56ad6c63b67d3d852ca462c))
+
 ## [0.3.0](https://github.com/respond-io/mcp-server/compare/v0.2.11...v0.3.0) (2026-02-16)
 
 
