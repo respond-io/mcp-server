@@ -1,6 +1,6 @@
 {
     "name": "@respond-io/mcp-server",
-    "version": "1.1.0",
+    "version": "0.3.0",
     "description": "Model Context Protocol server for Respond.io API integration with STDIO and HTTP/SSE support",
     "type": "module",
     "main": "dist/index.js",
