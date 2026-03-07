@@ -37,6 +37,13 @@ A Model Context Protocol (MCP) server implementation for the Respond.io API, ena
 - ✅ Add internal comments to contacts
 - ✅ Mention users in comments
 
+### Multi-Workspace Support
+- ✅ Configure multiple workspaces with separate API keys
+- ✅ AI agent can target a specific workspace by name
+- ✅ Default workspace when none is specified
+- ✅ `list_workspaces` tool to discover available workspaces
+- ✅ 100% backwards compatible — single API key mode unchanged
+
 ### HTTP/STDIO Dual Mode
 - ✅ Can run as a local subprocess via stdio or as an HTTP server (`/mcp` endpoint)
 - ✅ Health endpoint (`/health`) for monitoring and uptime checks
@@ -74,10 +81,14 @@ The project depends on `@respond-io/typescript-sdk`. See [SETUP_GUIDE.md](SETUP_
 
 The server is configured using environment variables. Set them in your shell or deployment environment.
 
-- `RESPONDIO_API_KEY`: **(Required)** Your Respond.io API key.
+- `RESPONDIO_API_KEY`: **(Required for single workspace)** Your Respond.io API key.
+- `RESPONDIO_WORKSPACES`: **(Required for multi-workspace)** JSON object mapping workspace names to API tokens.
+- `RESPONDIO_DEFAULT_WORKSPACE`: *(Optional)* Default workspace name when none is specified. Defaults to the first entry in `RESPONDIO_WORKSPACES`.
 - `RESPONDIO_BASE_URL`: The base URL for the Respond.io API (defaults to `https://api.respond.io/v2`).
 - `MCP_SERVER_MODE`: The server mode, either `stdio` or `http` (defaults to `stdio`).
 - `PORT`: The port for HTTP mode (defaults to `3000`).
+
+> **Note:** If both `RESPONDIO_API_KEY` and `RESPONDIO_WORKSPACES` are set, `RESPONDIO_WORKSPACES` takes priority.
 
 ---
 
@@ -110,6 +121,21 @@ You can use this server with Claude Desktop in either **STDIO** (local subproces
       ],
       "env": {
         "RESPONDIO_API_KEY": "your_api_key",
+        "MCP_SERVER_MODE": "stdio"
+      }
+    }
+```
+
+**Configure Claude Desktop (Multi-Workspace):**
+```json
+{
+      "command": "npx",
+      "args": [
+        "@respond-io/mcp-server"
+      ],
+      "env": {
+        "RESPONDIO_WORKSPACES": "{\"Workspace A\":\"token_a\",\"Workspace B\":\"token_b\"}",
+        "RESPONDIO_DEFAULT_WORKSPACE": "Workspace A",
         "MCP_SERVER_MODE": "stdio"
       }
     }
@@ -168,6 +194,24 @@ You should get a JSON list of available tools.
 ---
 
 ## Usage Examples
+
+### Multi-Workspace
+
+#### List Workspaces
+```typescript
+list_workspaces()
+// Returns: [{ name: "Workspace A", isDefault: true }, { name: "Workspace B", isDefault: false }]
+```
+
+#### Target a Specific Workspace
+```typescript
+// Any tool accepts an optional workspace parameter
+get_contact({ identifier: "id:12345", workspace: "Workspace B" })
+send_message({ identifier: "id:12345", messageType: "text", text: "Hello", workspace: "Workspace A" })
+
+// Omit workspace to use the default
+get_contact({ identifier: "id:12345" })
+```
 
 ### Contact Management
 
@@ -417,7 +461,7 @@ delete_tag({ name: "Old Tag" })
 
 ## Available Tools
 
-The server exposes **28** MCP tools for contacts, messaging, conversations, comments, and workspace management.
+The server exposes **28** MCP tools for contacts, messaging, conversations, comments, and workspace management (+ 1 additional tool in multi-workspace mode).
 
 **Summary:**
 
@@ -426,6 +470,9 @@ The server exposes **28** MCP tools for contacts, messaging, conversations, comm
 - **Conversation (2):** `assign_conversation`, `update_conversation_status`
 - **Comment (1):** `create_comment`
 - **Workspace (11):** `list_users`, `get_user`, `list_custom_fields`, `get_custom_field`, `create_custom_field`, `list_channels`, `list_closing_notes`, `list_templates`, `create_tag`, `update_tag`, `delete_tag`
+- **Multi-Workspace (1, only in multi-workspace mode):** `list_workspaces`
+
+> In multi-workspace mode, all tools gain an optional `workspace` parameter to target a specific workspace. If omitted, the default workspace is used.
 
 Tool parameters are defined in the server’s tool schemas (see `src/tools/`). Response shapes, rate limits, and API behavior come from the [Respond.io Developer API](https://docs.respond.io) and the [@respond-io/typescript-sdk](https://www.npmjs.com/package/@respond-io/typescript-sdk) used under the hood.
 
