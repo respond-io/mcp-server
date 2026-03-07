@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { API_CONFIG, APP_CONFIG } from "./constants.js";
+import { API_CONFIG, APP_CONFIG, getWorkspaceNames } from "./constants.js";
 import { HttpStreamProtocol, StdioProtocol } from "./protocol/index.js";
 import { initializeClientMonitoring } from "./utils/api.js";
 
@@ -13,9 +13,17 @@ import { initializeClientMonitoring } from "./utils/api.js";
 const startServer = async () => {
   const isHttpMode = process.env.MCP_SERVER_MODE === "http";
 
-  if (!isHttpMode && !API_CONFIG.API_KEY) {
-    console.error("RESPONDIO_API_KEY is not set in the environment");
+  if (!isHttpMode && !API_CONFIG.API_KEY && !API_CONFIG.WORKSPACES) {
+    console.error("Neither RESPONDIO_API_KEY nor RESPONDIO_WORKSPACES is set in the environment");
     process.exit(1);
+  }
+
+  if (API_CONFIG.WORKSPACES) {
+    const names = getWorkspaceNames();
+    console.warn(`[INFO] Multi-workspace mode: ${names.length} workspace(s) configured [${names.join(", ")}]`);
+    if (API_CONFIG.DEFAULT_WORKSPACE) {
+      console.warn(`[INFO] Default workspace: ${API_CONFIG.DEFAULT_WORKSPACE}`);
+    }
   }
 
   const protocol = isHttpMode
