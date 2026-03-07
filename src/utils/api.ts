@@ -1,7 +1,7 @@
 import { RespondIO, RespondIOError, type ContactIdentifier } from "@respond-io/typescript-sdk";
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { Ctx } from "../types.js";
-import { API_CONFIG } from "../constants.js";
+import { API_CONFIG, getWorkspaceNames } from "../constants.js";
 
 /**
  * Configuration for SDK client creation
@@ -301,19 +301,41 @@ export function formatContactIdentifier(identifier: string): ContactIdentifier {
 }
 
 /**
+ * Resolves the API token for a given workspace name.
+ * In multi-workspace mode, looks up the token from WORKSPACES config.
+ * In single-workspace mode, returns the API_KEY.
+ */
+export function getWorkspaceToken(workspace?: string): string | undefined {
+  if (API_CONFIG.WORKSPACES) {
+    const name = workspace ?? API_CONFIG.DEFAULT_WORKSPACE;
+    if (!name) return undefined;
+    const token = API_CONFIG.WORKSPACES[name];
+    if (!token) {
+      const available = getWorkspaceNames().join(", ");
+      throw new Error(
+        `Workspace "${name}" not found. Available workspaces: ${available}`
+      );
+    }
+    return token;
+  }
+  return API_CONFIG.API_KEY;
+}
+
+/**
  * Creates a new Respond.io SDK client with enhanced error handling and caching.
  *
  * @param {string} apiBaseUrl - The base URL for the API.
  * @param {string} mode - The mode of operation ("http" or "stdio").
  * @param {Ctx} ctx - The context object containing request information.
+ * @param {string} [workspace] - Optional workspace name for multi-workspace mode.
  * @returns {RespondIO} - A configured Respond.io SDK client.
  * @throws {Error} - Throws an error if the API base URL or token is not set.
  */
-export function createSdkClient(apiBaseUrl: string, mode: string, ctx: Ctx): RespondIO {
+export function createSdkClient(apiBaseUrl: string, mode: string, ctx: Ctx, workspace?: string): RespondIO {
   const apiToken =
     mode === "http" && ctx?.requestInfo?.headers?.authorization
       ? ctx.requestInfo.headers.authorization
-      : API_CONFIG.API_KEY;
+      : getWorkspaceToken(workspace);
 
   if (!apiBaseUrl) {
     throw new Error("RESPONDIO_BASE_URL is not set in the environment");
