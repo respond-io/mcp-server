@@ -35,7 +35,7 @@ export class CommentTool extends BaseTool {
       handler: async (args, ctx) => {
         const { identifier, text } = args as { identifier: string; text: string };
         try {
-          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx);
+          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx, args.workspace as string | undefined);
           const formattedIdentifier = formatContactIdentifier(identifier);
           const result = await sdkClient.comments.create(formattedIdentifier, {
             text,

@@ -36,7 +36,7 @@ export class ContactsTool extends BaseTool {
       handler: async (args, ctx) => {
         const { identifier } = args as { identifier: string };
         try {
-          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx);
+          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx, args.workspace as string | undefined);
           const formattedIdentifier = formatContactIdentifier(identifier);
           const contact = await sdkClient.contacts.get(formattedIdentifier);
           return handleSdkResponse(contact);
@@ -89,7 +89,7 @@ export class ContactsTool extends BaseTool {
         };
         const data: ContactFields = { firstName, lastName, phone, email, language, custom_fields };
         try {
-          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx);
+          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx, args.workspace as string | undefined);
           // For creation, we need email: or phone: format, not id:
           let formattedIdentifier: `email:${string}` | `phone:${string}`;
           if (identifier.includes("@")) {
@@ -123,7 +123,7 @@ export class ContactsTool extends BaseTool {
       handler: async (args, ctx) => {
         const { identifier, ...data } = args as { identifier: string } & Partial<ContactFields>;
         try {
-          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx);
+          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx, args.workspace as string | undefined);
           const formattedIdentifier = formatContactIdentifier(identifier);
           const contact = await sdkClient.contacts.update(formattedIdentifier, data);
           return handleSdkResponse(contact);
@@ -143,7 +143,7 @@ export class ContactsTool extends BaseTool {
       handler: async (args, ctx) => {
         const { identifier } = args as { identifier: string };
         try {
-          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx);
+          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx, args.workspace as string | undefined);
           const formattedIdentifier = formatContactIdentifier(identifier);
           await sdkClient.contacts.delete(formattedIdentifier);
           return handleSdkResponse({ success: true, message: "Contact deleted successfully" });
@@ -182,7 +182,7 @@ export class ContactsTool extends BaseTool {
           timezone?: string;
         };
         try {
-          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx);
+          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx, args.workspace as string | undefined);
           const result = await sdkClient.contacts.list(
             {
               search,
@@ -215,7 +215,7 @@ export class ContactsTool extends BaseTool {
       handler: async (args, ctx) => {
         const { identifier, tags } = args as { identifier: string; tags: string[] };
         try {
-          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx);
+          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx, args.workspace as string | undefined);
           const formattedIdentifier = formatContactIdentifier(identifier);
           await sdkClient.contacts.addTags(formattedIdentifier, tags);
           return handleSdkResponse({ success: true, message: "Tags added successfully" });
@@ -239,7 +239,7 @@ export class ContactsTool extends BaseTool {
       handler: async (args, ctx) => {
         const { identifier, tags } = args as { identifier: string; tags: string[] };
         try {
-          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx);
+          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx, args.workspace as string | undefined);
           const formattedIdentifier = formatContactIdentifier(identifier);
           await sdkClient.contacts.deleteTags(formattedIdentifier, tags);
           return handleSdkResponse({ success: true, message: "Tags removed successfully" });
@@ -291,7 +291,7 @@ export class ContactsTool extends BaseTool {
         };
         const data: ContactFields = { firstName, lastName, phone, email, language, custom_fields };
         try {
-          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx);
+          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx, args.workspace as string | undefined);
           const formattedIdentifier = formatContactIdentifier(identifier);
           const result = await sdkClient.contacts.createOrUpdate(formattedIdentifier, data);
           return handleSdkResponse(result);
@@ -327,7 +327,7 @@ export class ContactsTool extends BaseTool {
             phone?: string;
           };
         try {
-          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx);
+          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx, args.workspace as string | undefined);
           const request = {
             contactIds: [primaryContactId, secondaryContactId] as [number, number],
             ...(firstName !== undefined && { firstName }),
@@ -368,7 +368,7 @@ export class ContactsTool extends BaseTool {
           cursorId?: number;
         };
         try {
-          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx);
+          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx, args.workspace as string | undefined);
           const formattedIdentifier = formatContactIdentifier(identifier);
           const result = await sdkClient.contacts.listChannels(formattedIdentifier, {
             limit,
@@ -398,7 +398,7 @@ export class ContactsTool extends BaseTool {
       handler: async (args, ctx) => {
         const { identifier, stage } = args as { identifier: string; stage: string | null };
         try {
-          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx);
+          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx, args.workspace as string | undefined);
           const formattedIdentifier = formatContactIdentifier(identifier);
           // API accepts null to remove lifecycle; SDK types may not reflect this
           type LifecycleRequest = Parameters<typeof sdkClient.contacts.updateLifecycle>[1];
