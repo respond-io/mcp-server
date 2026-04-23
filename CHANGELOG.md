@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.0](https://github.com/respond-io/mcp-server/compare/v2.0.0...v2.1.0) (2026-04-23)
+
+
+### Features
+
+* migrate npm publish to OIDC trusted publishing ([4b902ee](https://github.com/respond-io/mcp-server/commit/4b902ee75c992cd905e35e88cdf0abaecd5658ee))
+
 ## [2.0.0](https://github.com/respond-io/mcp-server/compare/v1.2.0...v2.0.0) (2026-04-23)
 
 
