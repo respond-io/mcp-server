@@ -1,6 +1,6 @@
 {
     "name": "@respond-io/mcp-server",
-    "version": "1.2.0",
+    "version": "2.0.0",
     "description": "Model Context Protocol server for Respond.io API integration with STDIO and HTTP/SSE support",
     "type": "module",
     "main": "dist/index.js",
@@ -33,7 +33,7 @@
         "docker:compose:logs": "docker-compose logs -f",
         "health-check": "curl -f http://localhost:3000/health || exit 1",
         "validate": "npm run lint && npm run type-check && npm run test:coverage",
-        "prepublishOnly": "npm run validate && npm run build && cd dist",
+        "prepublishOnly": "npm run build",
         "prepack": "npm run build",
         "clean": "rm -rf dist coverage",
         "release:dev": "npm publish --registry https://npm.pkg.github.com/",
