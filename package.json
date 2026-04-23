@@ -103,5 +103,9 @@
         "LICENSE",
         "package.json",
         "CHANGELOG.md"
-    ]
+    ],
+    "publishConfig": {
+        "access": "public",
+        "provenance": true
+    }
 }
