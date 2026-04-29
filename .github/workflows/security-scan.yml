@@ -1,0 +1,19 @@
+name: Security Checks
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  merge_group:
+
+concurrency:
+  group: polinrider-scan-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  polinrider-scan:
+    name: PolinRider Supply-Chain Scan
+    uses: respond-io/shared-github-actions/.github/workflows/polinrider-scan.yml@v1.2.0
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
