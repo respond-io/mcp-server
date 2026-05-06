@@ -11,6 +11,7 @@ permissions:
   pull-requests: write
   packages: write
   issues: write
+  id-token: write
 
 jobs:
   audit:
@@ -75,8 +76,6 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - run: npm ci --ignore-scripts
       - run: npm run release
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   # notify_slack:
   #   needs: [audit, tests, create_release, publish_release]
@@ -99,4 +98,4 @@ jobs:
   #           ${{ secrets.SLACK_PACKAGE_RELEASE_WORKFLOW_URL }} \
   #           -H "Content-Type: application/json" \
   #           -d "{\"package_name\":\"${{ steps.package_info.outputs.PACKAGE_NAME }}-v${{ steps.package_version.outputs.PACKAGE_VERSION }}\"}"
-            
+

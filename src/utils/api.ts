@@ -275,12 +275,12 @@ export function formatContactIdentifier(identifier: string): ContactIdentifier {
 
   // If it's an email address
   if (identifier.includes("@")) {
-    return `email:${identifier}` as ContactIdentifier;
+    return `email:${identifier}`;
   }
 
   // If it starts with +, it's definitely a phone number
   if (identifier.startsWith("+")) {
-    return `phone:${identifier}` as ContactIdentifier;
+    return `phone:${identifier}`;
   }
 
   // If it's all digits, check length to guess type:
@@ -291,13 +291,13 @@ export function formatContactIdentifier(identifier: string): ContactIdentifier {
     // If it's a short number (< 6 digits), likely a contact ID
     // Otherwise, treat as phone number (add + prefix)
     if (identifier.length < 6) {
-      return `id:${parseInt(identifier)}` as ContactIdentifier;
+      return `id:${parseInt(identifier)}`;
     }
-    return `phone:+${identifier}` as ContactIdentifier;
+    return `phone:+${identifier}`;
   }
 
   // Default: treat as email (e.g. plain email or unknown format)
-  return `email:${identifier}` as ContactIdentifier;
+  return `email:${identifier}`;
 }
 
 /**

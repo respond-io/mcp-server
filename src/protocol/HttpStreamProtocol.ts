@@ -8,7 +8,6 @@ import { isInitializeRequest } from "@modelcontextprotocol/sdk/types.js";
 import { createServer } from "../server.js";
 import { tokenVerifier } from "../middlewares/TokenVerifier.js";
 import { BaseProtocol } from "./BaseProtocol.js";
-import { MCPServerOptions } from "../types.js";
 import path from "path";
 
 type InitOptions = {
@@ -116,7 +115,7 @@ export class HttpStreamProtocol extends BaseProtocol {
               apiBaseUrl: this.apiBaseUrl,
               debug: this.debug,
               mode: "http",
-            } as MCPServerOptions);
+            });
 
             const transport = new StreamableHTTPServerTransport({
               sessionIdGenerator: this.options.sessionIdGenerator ?? (() => randomUUID()),
