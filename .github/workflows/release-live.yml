@@ -11,6 +11,7 @@ permissions:
   pull-requests: write
   packages: write
   issues: write
+  id-token: write
 
 jobs:
   audit:
@@ -75,8 +76,6 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - run: npm ci --ignore-scripts
       - run: npm run release
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   # notify_slack:
   #   needs: [audit, tests, create_release, publish_release]
