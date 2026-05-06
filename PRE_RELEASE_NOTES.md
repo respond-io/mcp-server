@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.2](https://github.com/respond-io/mcp-server/compare/v0.4.1...v0.4.2) (2026-05-06)
+
+
+### Bug Fixes
+
+* remove unused MCPServerOptions type casting in HttpStreamProtocol and StdioProtocol; simplify return statements in formatContactIdentifier ([2b41f4e](https://github.com/respond-io/mcp-server/commit/2b41f4efaf6cc3ce38fee35b3199a39d24400852))
+
 ## [0.4.1](https://github.com/respond-io/mcp-server/compare/v0.4.0...v0.4.1) (2026-05-06)
 
 
