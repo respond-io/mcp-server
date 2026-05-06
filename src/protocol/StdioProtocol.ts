@@ -1,7 +1,6 @@
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { createServer } from "../server.js";
 import { BaseProtocol } from "./BaseProtocol.js";
-import { MCPServerOptions } from "../types.js";
 
 type InitOptions = {
   apiBaseUrl: string;
@@ -25,7 +24,7 @@ export class StdioProtocol extends BaseProtocol {
       apiBaseUrl: this.apiBaseUrl,
       debug: this.debug,
       mode: "stdio",
-    } as MCPServerOptions);
+    });
 
     try {
       await server.connect(transport);
