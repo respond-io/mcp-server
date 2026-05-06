@@ -98,4 +98,4 @@ jobs:
   #           ${{ secrets.SLACK_PACKAGE_RELEASE_WORKFLOW_URL }} \
   #           -H "Content-Type: application/json" \
   #           -d "{\"package_name\":\"${{ steps.package_info.outputs.PACKAGE_NAME }}-v${{ steps.package_version.outputs.PACKAGE_VERSION }}\"}"
-            
+
