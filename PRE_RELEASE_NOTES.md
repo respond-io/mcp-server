@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.1](https://github.com/respond-io/mcp-server/compare/v0.4.0...v0.4.1) (2026-05-06)
+
+
+### Bug Fixes
+
+* add a blank line for better readability in release-live.yml ([e40c564](https://github.com/respond-io/mcp-server/commit/e40c564121440dcf1c34e6e29d0b6240fa77296d))
+* removed spaces ([f9efdb1](https://github.com/respond-io/mcp-server/commit/f9efdb1d9bea8083cffaa4ca0a05e85cd1f6f706))
+
 ## [0.4.0](https://github.com/respond-io/mcp-server/compare/v0.3.0...v0.4.0) (2026-02-27)
 
 
