@@ -141,7 +141,7 @@ export class MessagingTool extends BaseTool {
           [key: string]: unknown;
         };
         try {
-          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx);
+          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx, args.workspace as string | undefined);
           const formattedIdentifier = formatContactIdentifier(identifier);
           let message: Message;
 
@@ -201,7 +201,7 @@ export class MessagingTool extends BaseTool {
       handler: async (args, ctx) => {
         const { identifier, messageId } = args as { identifier: string; messageId: number };
         try {
-          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx);
+          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx, args.workspace as string | undefined);
           const formattedIdentifier = formatContactIdentifier(identifier);
           const message = await sdkClient.messaging.get(formattedIdentifier, messageId);
           return handleSdkResponse(message);
@@ -236,7 +236,7 @@ export class MessagingTool extends BaseTool {
           cursorId?: number;
         };
         try {
-          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx);
+          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx, args.workspace as string | undefined);
           const formattedIdentifier = formatContactIdentifier(identifier);
           const result = await sdkClient.messaging.list(formattedIdentifier, {
             limit,

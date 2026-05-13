@@ -33,7 +33,7 @@ export class ConversationTool extends BaseTool {
       handler: async (args, ctx) => {
         const { identifier, assignee } = args as { identifier: string; assignee: string | null };
         try {
-          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx);
+          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx, args.workspace as string | undefined);
           const formattedIdentifier = formatContactIdentifier(identifier);
           const result = await sdkClient.conversations.assign(formattedIdentifier, { assignee });
           return handleSdkResponse(result);
@@ -69,7 +69,7 @@ export class ConversationTool extends BaseTool {
           summary?: string;
         };
         try {
-          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx);
+          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx, args.workspace as string | undefined);
           const formattedIdentifier = formatContactIdentifier(identifier);
           const result = await sdkClient.conversations.updateStatus(formattedIdentifier, {
             status: status as "open" | "close",

@@ -392,6 +392,8 @@ export type MCPServerOptions = {
   mode: "http" | "stdio";
 };
 
+export type WorkspaceConfig = Record<string, string>;
+
 export type ToolArgs = Record<string, any>;
 
 export type ToolHandler = (

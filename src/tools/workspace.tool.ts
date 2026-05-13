@@ -30,7 +30,7 @@ export class WorkspaceTool extends BaseTool {
       handler: async (args, ctx) => {
         const { limit, cursorId } = args as { limit?: number; cursorId?: number };
         try {
-          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx);
+          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx, args.workspace as string | undefined);
           const result = await sdkClient.space.listUsers({ limit, cursorId });
           return handleSdkResponse(result);
         } catch (error) {
@@ -47,7 +47,7 @@ export class WorkspaceTool extends BaseTool {
       handler: async (args, ctx) => {
         const { id } = args as { id: number };
         try {
-          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx);
+          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx, args.workspace as string | undefined);
           const result = await sdkClient.space.getUser(id);
           return handleSdkResponse(result);
         } catch (error) {
@@ -70,7 +70,7 @@ export class WorkspaceTool extends BaseTool {
       handler: async (args, ctx) => {
         const { limit, cursorId } = args as { limit?: number; cursorId?: number };
         try {
-          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx);
+          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx, args.workspace as string | undefined);
           const result = await sdkClient.space.listCustomFields({ limit, cursorId });
           return handleSdkResponse(result);
         } catch (error) {
@@ -87,7 +87,7 @@ export class WorkspaceTool extends BaseTool {
       handler: async (args, ctx) => {
         const { id } = args as { id: number };
         try {
-          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx);
+          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx, args.workspace as string | undefined);
           const result = await sdkClient.space.getCustomField(id);
           return handleSdkResponse(result);
         } catch (error) {
@@ -125,7 +125,7 @@ export class WorkspaceTool extends BaseTool {
           allowedValues?: string[];
         };
         try {
-          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx);
+          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx, args.workspace as string | undefined);
           const result = await sdkClient.space.createCustomField({
             name,
             slug,
@@ -154,7 +154,7 @@ export class WorkspaceTool extends BaseTool {
       handler: async (args, ctx) => {
         const { limit, cursorId } = args as { limit?: number; cursorId?: number };
         try {
-          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx);
+          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx, args.workspace as string | undefined);
           const result = await sdkClient.space.listChannels({ limit, cursorId });
           return handleSdkResponse(result);
         } catch (error) {
@@ -177,7 +177,7 @@ export class WorkspaceTool extends BaseTool {
       handler: async (args, ctx) => {
         const { limit, cursorId } = args as { limit?: number; cursorId?: number };
         try {
-          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx);
+          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx, args.workspace as string | undefined);
           const result = await sdkClient.space.listClosingNotes({ limit, cursorId });
           return handleSdkResponse(result);
         } catch (error) {
@@ -209,7 +209,7 @@ export class WorkspaceTool extends BaseTool {
           cursorId?: number;
         };
         try {
-          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx);
+          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx, args.workspace as string | undefined);
           const result = await sdkClient.space.listTemplates(channelId, { limit, cursorId });
           return handleSdkResponse(result);
         } catch (error) {
@@ -237,7 +237,7 @@ export class WorkspaceTool extends BaseTool {
           emoji?: string;
         };
         try {
-          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx);
+          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx, args.workspace as string | undefined);
           const result = await sdkClient.space.createTag({
             name,
             description,
@@ -265,7 +265,7 @@ export class WorkspaceTool extends BaseTool {
           colorCode?: string;
         };
         try {
-          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx);
+          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx, args.workspace as string | undefined);
           const result = await sdkClient.space.updateTag({
             currentName,
             name,
@@ -286,7 +286,7 @@ export class WorkspaceTool extends BaseTool {
       handler: async (args, ctx) => {
         const { name } = args as { name: string };
         try {
-          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx);
+          const sdkClient = createSdkClient(this.apiBaseUrl, this.mode, ctx as Ctx, args.workspace as string | undefined);
           const result = await sdkClient.space.deleteTag({ name });
           return handleSdkResponse(result);
         } catch (error) {

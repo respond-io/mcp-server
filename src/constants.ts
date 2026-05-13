@@ -7,13 +7,47 @@ export const APP_CONFIG = {
   debug: false,
 } as const;
 
+function parseWorkspaces(): Record<string, string> | undefined {
+  const raw = process.env.RESPONDIO_WORKSPACES;
+  if (!raw) return undefined;
+  try {
+    const parsed = JSON.parse(raw);
+    if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
+      throw new Error("RESPONDIO_WORKSPACES must be a JSON object mapping workspace names to tokens");
+    }
+    return parsed as Record<string, string>;
+  } catch (e) {
+    if (e instanceof SyntaxError) {
+      throw new Error(`RESPONDIO_WORKSPACES is not valid JSON: ${e.message}`);
+    }
+    throw e;
+  }
+}
+
+const WORKSPACES = parseWorkspaces();
+const WORKSPACE_NAMES = WORKSPACES ? Object.keys(WORKSPACES) : [];
+const DEFAULT_WORKSPACE =
+  process.env.RESPONDIO_DEFAULT_WORKSPACE && WORKSPACES?.[process.env.RESPONDIO_DEFAULT_WORKSPACE]
+    ? process.env.RESPONDIO_DEFAULT_WORKSPACE
+    : WORKSPACE_NAMES[0] ?? undefined;
+
 export const API_CONFIG = {
   BASE_URL: process.env.RESPONDIO_BASE_URL || "https://api.respond.io/v2",
   API_KEY: process.env.RESPONDIO_API_KEY,
   TIMEOUT: 30000, // 30 seconds
   MAX_RETRIES: 3,
   RETRY_DELAY: 1000, // 1 second
-} as const;
+  WORKSPACES,
+  DEFAULT_WORKSPACE,
+};
+
+export function isMultiWorkspace(): boolean {
+  return WORKSPACE_NAMES.length >= 2;
+}
+
+export function getWorkspaceNames(): string[] {
+  return WORKSPACE_NAMES;
+}
 
 export const PAGINATION = {
   DEFAULT_LIMIT: 10,
